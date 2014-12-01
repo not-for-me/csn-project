@@ -15,7 +15,7 @@ import java.text.ParseException;
 import java.util.*;
 
 public class SearchDAO {
-    Logger logger = LoggerFactory.getLogger(SearchDAO.class);
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private TagDAO tagDAO;
     private DB mongoDB;

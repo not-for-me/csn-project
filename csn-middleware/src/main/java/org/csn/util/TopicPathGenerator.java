@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TopicPathGenerator {
-    static Logger logger = LoggerFactory.getLogger(TopicPathGenerator.class);
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final String CSN_PREFIX = "CSN";
     private static final String CENTRAL_MODE_TOPIC_PATH = "CSN.CENTRAL.DATA";

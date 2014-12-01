@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class MessageQueueManagerImpl implements MessageQueueManager {
-    Logger logger = LoggerFactory.getLogger(MessageQueueManagerImpl.class);
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private BrokerService service;
     private JMXServiceURL jmxURL;

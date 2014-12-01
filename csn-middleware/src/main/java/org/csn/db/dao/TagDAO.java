@@ -13,7 +13,7 @@ import java.util.Set;
 
 
 public class TagDAO {
-    Logger logger = LoggerFactory.getLogger(SensorNetworkDAO.class);
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private ConnectionMaker connectionMaker;
 

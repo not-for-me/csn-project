@@ -11,8 +11,8 @@ import org.slf4j.LoggerFactory;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
-public class CentralizedDataDistributer extends Thread implements MqttCallback {
-    Logger logger = LoggerFactory.getLogger(CentralizedDataDistributer.class);
+public class CentralizedDataDistributor extends Thread implements MqttCallback {
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
     MqttClient myClient;
     MqttConnectOptions connOpt;
@@ -24,7 +24,7 @@ public class CentralizedDataDistributer extends Thread implements MqttCallback {
 
     private volatile boolean stopped = false;
 
-    public CentralizedDataDistributer(String name, BlockingQueue queue) {
+    public CentralizedDataDistributor(String name, BlockingQueue queue) {
         super(name);
         this.queue = queue;
     }

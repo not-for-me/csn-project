@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DataPersistenceWorker extends Thread implements MqttCallback {
-    Logger logger = LoggerFactory.getLogger(DataPersistenceWorker.class);
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private MqttClient myClient;
     private ObjectMapper jsonMapper;

@@ -120,7 +120,7 @@ public class SensorNetworkManagerImpl implements SensorNetworkManager {
 
     @Override
     public Map<String, Set<String>> getMappingMapInfo() {
-        Map<String, Set<String>> mappingMap = new HashMap<String, Set<String>>();
+        Map<String, Set<String>> mappingMap = new HashMap<>();
         Set<String> memberNetworkIDs = this.getAllMemberNetworkIDs();
 
         for(String memberID : memberNetworkIDs) {

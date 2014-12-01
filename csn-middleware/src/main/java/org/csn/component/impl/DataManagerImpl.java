@@ -1,7 +1,7 @@
 package org.csn.component.impl;
 
 import org.csn.component.DataManager;
-import org.csn.component.threads.CentralizedDataDistributer;
+import org.csn.component.threads.CentralizedDataDistributor;
 import org.csn.component.threads.CentralizedDataSubscriber;
 import org.csn.component.threads.DataPersistenceWorker;
 import org.csn.data.ReturnType;
@@ -13,17 +13,17 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 public class DataManagerImpl implements DataManager {
-    Logger logger = LoggerFactory.getLogger(DataManagerImpl.class);
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private CentralizedDataSubscriber subsThread;
-    private CentralizedDataDistributer pubThread;
+    private CentralizedDataSubscriber subscriberThread;
+    private CentralizedDataDistributor distributorThread;
     private DataPersistenceWorker persistenceThread;
     private BlockingQueue<SensorData> queue;
     private boolean persistOption;
 
-    private static final String pubThreadName = "Data Publisher";
+    private static final String distributorThreadName = "Data Distributor";
     private static final String subThreadName = "Data Subscriber";
-    private static final String persitThreadName = "Data Persistence Worker";
+    private static final String persistenceThreadName = "Data Persistence Worker";
 
     public DataManagerImpl() {
         queue = new ArrayBlockingQueue<SensorData>(1024);
@@ -69,31 +69,31 @@ public class DataManagerImpl implements DataManager {
 
     public ReturnType initSubscriberThread() {
         logger.info("Create CentralizedDataSubscriber Thread ...");
-        subsThread = new CentralizedDataSubscriber(subThreadName, queue);
+        subscriberThread = new CentralizedDataSubscriber(subThreadName, queue);
         return ReturnType.Done;
     }
 
     public ReturnType initPublisherThread() {
-        logger.info("Create CentralizedDataDistributer Thread ...");
-        pubThread = new CentralizedDataDistributer(pubThreadName, queue);
+        logger.info("Create CentralizedDataDistributor Thread ...");
+        distributorThread = new CentralizedDataDistributor(distributorThreadName, queue);
         return ReturnType.Done;
     }
 
     public ReturnType initPersistenceThread() {
         logger.info("Create Persistence Thread ...");
-        persistenceThread = new DataPersistenceWorker(persitThreadName);
+        persistenceThread = new DataPersistenceWorker(persistenceThreadName);
         return ReturnType.Done;
     }
 
     public ReturnType startSubscriberThread() {
         logger.info("Start Subscriber Thread");
-        subsThread.start();
+        subscriberThread.start();
         return ReturnType.Done;
     }
 
     public ReturnType startPublisherThread() {
         logger.info("Start Publisher Thread");
-        pubThread.start();
+        distributorThread.start();
         return ReturnType.Done;
     }
 
@@ -105,13 +105,13 @@ public class DataManagerImpl implements DataManager {
 
     public ReturnType stopSubscriberThread() {
         logger.info("Stop Subscriber Data Manager");
-        subsThread.setStopped(true);
+        subscriberThread.setStopped(true);
         return ReturnType.Done;
     }
 
     public ReturnType stopPublisherThread() {
         logger.info("Stop Publisher Data Manager");
-        pubThread.setStopped(true);
+        distributorThread.setStopped(true);
         return ReturnType.Done;
     }
 

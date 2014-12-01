@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.BlockingQueue;
 
 public class CentralizedDataSubscriber extends Thread implements MqttCallback{
-    Logger logger = LoggerFactory.getLogger(CentralizedDataSubscriber.class);
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
     protected BlockingQueue queue;
     private MqttClient myClient;

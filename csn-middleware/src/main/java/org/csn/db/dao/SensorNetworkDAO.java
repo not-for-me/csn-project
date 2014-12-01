@@ -13,7 +13,7 @@ import java.sql.ResultSet;
 import java.util.*;
 
 public class SensorNetworkDAO {
-    Logger logger = LoggerFactory.getLogger(SensorNetworkDAO.class);
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private ConnectionMaker connectionMaker;
 

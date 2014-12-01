@@ -10,11 +10,10 @@ import org.csn.data.ReturnType;
 import org.csn.util.TimeGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.Map;
 
 public class CoordinatorImpl implements Coordinator {
-    Logger logger = LoggerFactory.getLogger(CoordinatorImpl.class);
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private CSNConfiguration configuration;
     private SensorNetworkManager sensorNetworkManager;
@@ -31,7 +30,6 @@ public class CoordinatorImpl implements Coordinator {
         this.configuration.setCsnName(name);
         this.configuration.setCreationTime(TimeGenerator.getCurrentTimestamp());
     }
-
 
     @Override
     public ReturnType initCSN() {
@@ -119,7 +117,6 @@ public class CoordinatorImpl implements Coordinator {
         return ReturnType.Done;
     }
 
-
     @Override
     public CSNConfiguration getCsnConfiguration() {
         return configuration;
@@ -140,7 +137,7 @@ public class CoordinatorImpl implements Coordinator {
         return mqManager;
     }
 
-    public void setConfiguration(CSNConfiguration configuration) {
+    public void setCsnConfiguration(CSNConfiguration configuration) {
         this.configuration = configuration;
     }
 

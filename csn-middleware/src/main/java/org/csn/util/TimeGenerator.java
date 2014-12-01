@@ -9,7 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class TimeGenerator {
-    static Logger logger = LoggerFactory.getLogger(TimeGenerator.class);
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
 
     public static String getCurrentTimestamp() {
