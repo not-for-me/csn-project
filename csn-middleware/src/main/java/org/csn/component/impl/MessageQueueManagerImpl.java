@@ -1,7 +1,6 @@
 package org.csn.component.impl;
 
 import org.csn.component.MessageQueueManager;
-import org.csn.data.MessageQueue;
 import org.csn.data.ReturnType;
 import org.apache.activemq.broker.BrokerFactory;
 import org.apache.activemq.broker.BrokerService;

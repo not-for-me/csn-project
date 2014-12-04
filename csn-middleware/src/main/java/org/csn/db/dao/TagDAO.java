@@ -35,7 +35,7 @@ public class TagDAO {
 
             Connection c = connectionMaker.makeConnection();
             PreparedStatement ps = c.prepareStatement(
-                    "INSERT INTO csn_tag_relation (tag_id, sn_id) VALUES(?, ?)");
+                    "INSERT INTO csn_annotate (tag_id, sn_id) VALUES(?, ?)");
             ps.setString(1, tag_id);
             ps.setString(2, id);
 
@@ -141,7 +141,7 @@ public class TagDAO {
         try {
             Connection c = connectionMaker.makeConnection();
             PreparedStatement ps = c.prepareStatement(
-                    "SELECT COUNT(*) FROM csn_tag_relation WHERE tag_id = ? AND sn_id = ?");
+                    "SELECT COUNT(*) FROM csn_annotate WHERE tag_id = ? AND sn_id = ?");
             String tag_id = this.getTagID(tag);
             if(tag_id == null)
                 return false;
@@ -184,7 +184,7 @@ public class TagDAO {
         try {
             Connection c = connectionMaker.makeConnection();
             PreparedStatement ps = c.prepareStatement(
-                    "SELECT tag_id FROM csn_tag_relation WHERE sn_id = ?");
+                    "SELECT tag_id FROM csn_annotate WHERE sn_id = ?");
             ps.setString(1, id);
             ResultSet rs = ps.executeQuery();
             while(rs.next())
@@ -222,7 +222,7 @@ public class TagDAO {
         try {
             Connection c = connectionMaker.makeConnection();
             PreparedStatement ps = c.prepareStatement(
-                    "DELETE FROM csn_tag_relation WHERE tag_id = ? AND  sn_id = ?");
+                    "DELETE FROM csn_annotate WHERE tag_id = ? AND  sn_id = ?");
             String tag_id = this.getTagID(tag);
             ps.setString(1, tag_id);
             ps.setString(2, id);
@@ -242,7 +242,7 @@ public class TagDAO {
         try {
             Connection c = connectionMaker.makeConnection();
             PreparedStatement ps = c.prepareStatement(
-                    "DELETE FROM csn_tag_relation WHERE sn_id = ?");
+                    "DELETE FROM csn_annotate WHERE sn_id = ?");
             ps.setString(1, id);
 
             ps.executeUpdate();

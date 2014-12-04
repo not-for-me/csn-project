@@ -178,7 +178,7 @@ public class NetworkREST {
         jsonDataMap.put(JsonKeyName.RET_DATA_NAME, network);
 
         ReturnType retType = coordinator.getSensorNetworkManager().removeNetwork(id);
-        jsonDataMap.put(JsonKeyName.METHOD_NAME,"NETWORK");
+        jsonDataMap.put(JsonKeyName.METHOD_NAME,"DELETE");
         jsonDataMap.put(JsonKeyName.SCOPE_NAME,"ALL");
 
         if(retType == ReturnType.Done)
@@ -191,7 +191,6 @@ public class NetworkREST {
         return Response.ok(retJsonMap, MediaType.APPLICATION_JSON).build();
     }
 
-
     @GET
     @Path("/{id}/parents")
     @Produces(MediaType.APPLICATION_JSON)
@@ -199,8 +198,14 @@ public class NetworkREST {
         logger.info("Input Network ID: {}", id );
         Set set = null;
 
-        set = (select.equals("topics")) ? coordinator.getSensorNetworkManager().getParentNetworkTopicPaths(id)
-                :  coordinator.getSensorNetworkManager().getParentNetworks(id);
+        if(select == null ) {
+            logger.info("Get Parent Network IDs");
+            set = coordinator.getSensorNetworkManager().getParentNetworks(id);
+        }
+        else {
+            logger.info("Get Parent Network Topic Paths");
+            set = coordinator.getSensorNetworkManager().getParentNetworkTopicPaths(id);
+        }
 
         if(set != null) {
             try { logger.info("Data which is sent: {}", mapper.writeValueAsString(set)); } catch (JsonProcessingException e) { e.printStackTrace(); }

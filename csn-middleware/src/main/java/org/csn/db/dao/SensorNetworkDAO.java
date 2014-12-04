@@ -125,7 +125,7 @@ public class SensorNetworkDAO {
     }
 
     public Set<SensorNetwork> getAllNetworks() {
-        Set<SensorNetwork> set = new HashSet<SensorNetwork>();
+        Set<SensorNetwork> set = new HashSet<>();
 
         try {
             Connection c = connectionMaker.makeConnection();
@@ -189,7 +189,7 @@ public class SensorNetworkDAO {
     public Set<String> getAllNetworkIDs() {
         Set<String> idSet = null;
         try {
-            idSet = new HashSet<String>();
+            idSet = new HashSet<>();
             Connection c = connectionMaker.makeConnection();
             PreparedStatement ps = c.prepareStatement("SELECT id FROM csn_sn WHERE status = 'Operating'");
             ResultSet rs = ps.executeQuery();
@@ -207,7 +207,7 @@ public class SensorNetworkDAO {
     public Set<String> getNetworkIDs(int index, int num) {
         Set<String> idSet = null;
         try {
-            idSet = new HashSet<String>();
+            idSet = new HashSet<>();
             Connection c = connectionMaker.makeConnection();
             PreparedStatement ps = c.prepareStatement(
                     "SELECT id FROM csn_sn WHERE status='Operating' ORDER BY id ASC LIMIT ?, ?");
@@ -305,7 +305,7 @@ public class SensorNetworkDAO {
     public Set<String> getNetworkTopicPaths(int index, int num) {
         Set<String> topicPathSet;
         try {
-            topicPathSet = new HashSet<String>();
+            topicPathSet = new HashSet<>();
             Connection c = connectionMaker.makeConnection();
             PreparedStatement ps = c.prepareStatement(
                     "SELECT topic_path FROM csn_sn WHERE status='Operating' ORDER BY id ASC LIMIT ?, ?");
@@ -663,8 +663,11 @@ public class SensorNetworkDAO {
                     "SELECT member_id FROM csn_sn_member WHERE parent_id = ?");
             ps.setString(1, id);
             ResultSet rs = ps.executeQuery();
-            while(rs.next())
-                set.add(rs.getString(1));
+            while(rs.next()) {
+                String memberID = rs.getString(1);
+                if( !memberID.equals(id) )
+                    set.add(rs.getString(1));
+            }
 
             ps.close();
             c.close();

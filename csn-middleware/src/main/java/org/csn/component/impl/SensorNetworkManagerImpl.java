@@ -52,18 +52,18 @@ public class SensorNetworkManagerImpl implements SensorNetworkManager {
         String topicPath = ( isSingle ) ? TopicPathGenerator.getNetworkTopicPath(id, name, NetworkType.Single)
                 : TopicPathGenerator.getNetworkTopicPath(id, name, NetworkType.Multi);
 
-        _registerNetwork(id, members, tags, topicPath);
+        _registerNetwork(id, members, topicPath);
         // Create another Single Network for the multi networks
-        if(!isSingle){
-            topicPath = TopicPathGenerator.getNetworkTopicPath(id, name, NetworkType.Single);
-            members = new HashSet<>();
-            members.add(id);
-            _registerNetwork(id, members, tags, topicPath);
-        }
+//        if(!isSingle){
+//            topicPath = TopicPathGenerator.getNetworkTopicPath(id, name, NetworkType.Single);
+//            members = new HashSet<>();
+//            members.add(id);
+//            _registerNetwork(id, members, topicPath);
+//        }
         return id;
     }
 
-    private void _registerNetwork(String id, Set<String> members, Set<String> tags, String topicPath) {
+    private void _registerNetwork(String id, Set<String> members, String topicPath) {
         sensorNetworkDAO.addMember(id, members);
         logger.info("Created Network ID: {} /  Topic Path: {}", id, topicPath);
         sensorNetworkDAO.updateTopicPath(id, topicPath);
