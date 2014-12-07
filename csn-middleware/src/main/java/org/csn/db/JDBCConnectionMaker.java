@@ -1,20 +1,29 @@
 package org.csn.db;
 
+import org.csn.util.CSNXMLParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Map;
 
 public class JDBCConnectionMaker implements ConnectionMaker {
-    private static String DB_PATH = "jdbc:mysql://localhost:3306/csn";
-    private static String DB_USER = "root";
-    private static String DB_PW = "cir@817";
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public Connection makeConnection() throws ClassNotFoundException, SQLException, IOException {
         Class.forName("com.mysql.jdbc.Driver");
-        Connection c  = DriverManager.getConnection(DB_PATH,DB_USER, DB_PW);
+        String dbPath =  this.getClass().getClassLoader().getResource("").getPath() + "../configuration.xml";
+        Map<String, String> connInfoMap = CSNXMLParser.getDBConnInfo(dbPath);
+
+        Connection c = DriverManager.getConnection(
+                connInfoMap.get("url"),
+                connInfoMap.get("user"),
+                connInfoMap.get("password")
+        );
         return c;
     }
-
 
 }

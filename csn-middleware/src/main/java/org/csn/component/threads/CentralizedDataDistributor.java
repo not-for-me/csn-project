@@ -16,15 +16,14 @@ public class CentralizedDataDistributor extends Thread implements MqttCallback {
 
     MqttClient myClient;
     MqttConnectOptions connOpt;
-    private ObjectMapper jsonMapper;
 
-    protected BlockingQueue queue;
+    protected BlockingQueue<SensorData> queue;
     static final String CLIENT_ID = "Publisher-Node";
     static final String BROKER_URL = "tcp://localhost:1883";
 
     private volatile boolean stopped = false;
 
-    public CentralizedDataDistributor(String name, BlockingQueue queue) {
+    public CentralizedDataDistributor(String name, BlockingQueue<SensorData> queue) {
         super(name);
         this.queue = queue;
     }
@@ -69,9 +68,6 @@ public class CentralizedDataDistributor extends Thread implements MqttCallback {
         System.out.println("Connection lost!");
     }
 
-    public void deliveryComplete(MqttDeliveryToken arg0) {
-    }
-
     public void messageArrived(String arg0, MqttMessage arg1) throws Exception {
     }
 
@@ -97,17 +93,19 @@ public class CentralizedDataDistributor extends Thread implements MqttCallback {
 
         if( queue.peek() != null ) {
             logger.info("Pop Sensor Data from Central Queue ...");
-            sensorData = (SensorData) queue.poll();
+            sensorData = queue.poll();
 
-            for(String memberID : NetworkMappingMap.getMappingMap().keySet()) {
-                Set<String> topicPaths = NetworkMappingMap.getMappingMap().get(memberID);
+//            for(String memberID : NetworkMappingMap.getMappingMap().keySet()) {
+//                Set<String> topicPaths = NetworkMappingMap.getMappingMap().get(memberID);
+
+            Set<String> topicPaths = NetworkMappingMap.getMappingMap().get(sensorData.getId());
                 for(String topicPath : topicPaths) {
                     logger.info("Current Sensor Data is a member of {}", topicPath);
 
                     String mqttTopicName = topicPath.replace('.', '/');
                     // Setup topic
                     MqttTopic topic = myClient.getTopic(mqttTopicName);
-                    jsonMapper = new ObjectMapper();
+                    ObjectMapper jsonMapper = new ObjectMapper();
 
                     String jsonStr = null;
                     try {
@@ -131,7 +129,7 @@ public class CentralizedDataDistributor extends Thread implements MqttCallback {
                         e.printStackTrace();
                     }
                 }
-            }
+//            }
         }
     }
 

@@ -1,4 +1,5 @@
 org/csn/data/ReturnType.class
+org/csn/util/CSNXMLParser.class
 org/csn/data/SensorNetwork.class
 org/csn/db/CSNDAOFactory.class
 org/csn/util/NetworkIDGenerator.class

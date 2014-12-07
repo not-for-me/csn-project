@@ -11,7 +11,7 @@ import java.util.concurrent.BlockingQueue;
 public class CentralizedDataSubscriber extends Thread implements MqttCallback{
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    protected BlockingQueue queue;
+    protected BlockingQueue<SensorData> queue;
     private MqttClient myClient;
     private ObjectMapper jsonMapper;
 
@@ -75,7 +75,6 @@ public class CentralizedDataSubscriber extends Thread implements MqttCallback{
     public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
         String data = mqttMessage.toString();
         logger.info("MQTT MSG Come: {}", data);
-        // TODO Implement to parse JSON-STRING
         SensorData sensorData = jsonMapper.readValue(data, SensorData.class);
         try {
             queue.put(sensorData);

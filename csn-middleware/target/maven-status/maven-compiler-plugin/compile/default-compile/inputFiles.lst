@@ -24,6 +24,7 @@
 /Users/NFM/Develop/project/csn-project/csn-middleware/src/main/java/org/csn/component/impl/SensorNetworkManagerImpl.java
 /Users/NFM/Develop/project/csn-project/csn-middleware/src/main/java/org/csn/component/impl/CoordinatorImpl.java
 /Users/NFM/Develop/project/csn-project/csn-middleware/src/main/java/org/csn/component/MessageQueueManager.java
+/Users/NFM/Develop/project/csn-project/csn-middleware/src/main/java/org/csn/util/CSNXMLParser.java
 /Users/NFM/Develop/project/csn-project/csn-middleware/src/main/java/org/csn/data/SensorData.java
 /Users/NFM/Develop/project/csn-project/csn-middleware/src/main/java/org/csn/data/CSNConfiguration.java
 /Users/NFM/Develop/project/csn-project/csn-middleware/src/main/java/org/csn/component/impl/DataManagerImpl.java

@@ -84,3 +84,15 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+
+### Maven ###
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+
+csn-restapi/src/main/webapp/WEB-INF/configuration.xml

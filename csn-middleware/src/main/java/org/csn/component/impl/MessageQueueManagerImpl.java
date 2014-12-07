@@ -257,8 +257,8 @@ public class MessageQueueManagerImpl implements MessageQueueManager {
             if(topicMBean.getName().substring(0, 8).compareTo("ActiveMQ") != 0) {
                 Map<String, Object> tempMap = new HashMap<String, Object>();
                 tempMap.put("topicName", topicMBean.getName());
-                tempMap.put("inNum", topicMBean.getDequeueCount());
-                tempMap.put("outNum", topicMBean.getEnqueueCount());
+                tempMap.put("outNum", topicMBean.getDequeueCount());
+                tempMap.put("inNum", topicMBean.getEnqueueCount());
                 topicSet.add(tempMap);
             }
         }

@@ -38,10 +38,10 @@ public class SearchREST {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response searchNetworksWithConcepts(@QueryParam("target") String target, Set<String> concepts) {
-        logger.info("Network Searching with Concepts\n, {} ", concepts.toString());
+    public Response searchNetworksWithConcepts(@QueryParam("target") String target, Set<String> tags) {
+        logger.info("Network Searching with Tags\n, {} ", tags.toString());
 
-        Set<String> networks = searchDAO.searchNetworkWithConcepts(concepts);
+        Set<String> networks = searchDAO.searchNetworkWithConcepts(tags);
 
         try { logger.info("Data which is sent: {}", mapper.writeValueAsString(networks)); } catch (JsonProcessingException e) { e.printStackTrace(); }
         return Response.ok(networks, MediaType.APPLICATION_JSON).build();

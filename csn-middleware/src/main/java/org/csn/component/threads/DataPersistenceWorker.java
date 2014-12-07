@@ -15,6 +15,7 @@ public class DataPersistenceWorker extends Thread implements MqttCallback {
 
     private MqttClient myClient;
     private ObjectMapper jsonMapper;
+    private MongoDBConnectionMaker mongoConnMaker;
     private DB mongo;
 
     private static final boolean MQTT_CLEAN_SESSION_OPT = true;
@@ -29,7 +30,8 @@ public class DataPersistenceWorker extends Thread implements MqttCallback {
     public DataPersistenceWorker(String name) {
         super(name);
         jsonMapper = new ObjectMapper();
-        mongo = new MongoDBConnectionMaker().getMongoDB();
+        mongoConnMaker = new MongoDBConnectionMaker();
+        mongo = mongoConnMaker.getMongoDB();
     }
 
     public void before() throws Exception {
@@ -51,10 +53,6 @@ public class DataPersistenceWorker extends Thread implements MqttCallback {
         logger.info("Connected to {}", MQTT_BROKER_URL_OPT);
     }
 
-    public void after() throws Exception {
-        myClient.disconnect();
-    }
-
     @Override
     public void run() {
         try {
@@ -63,7 +61,8 @@ public class DataPersistenceWorker extends Thread implements MqttCallback {
             while( !isStopped() ) {
             }
             logger.info("Disconnecting to MQ");
-            after();
+            mongoConnMaker.closeMongo();
+            myClient.disconnect();
             logger.info("Thread will be stopped");
         } catch (Exception e) {
             e.printStackTrace();
@@ -73,7 +72,6 @@ public class DataPersistenceWorker extends Thread implements MqttCallback {
 
     @Override
     public void connectionLost(Throwable throwable) {
-        // TODO Need to be implemented for Connection Lost Error
         logger.warn("Connection lost!");
     }
 

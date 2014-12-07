@@ -437,7 +437,7 @@ public class NetworkREST {
 //
 
     @POST
-    @Path("/{id}/concepts")
+    @Path("/{id}/tags")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response addConcepts(Set<String> input,  @PathParam("id") String id) {
@@ -464,7 +464,7 @@ public class NetworkREST {
     }
 
     @GET
-    @Path("/{id}/concepts")
+    @Path("/{id}/tags")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllConcepts(@PathParam("id") String id) {
         logger.info("Input  Network ID: {}", id );
@@ -478,7 +478,7 @@ public class NetworkREST {
     }
 
     @DELETE
-    @Path("/{id}/concepts")
+    @Path("/{id}/tags")
     @Produces(MediaType.APPLICATION_JSON)
     public Response removeNetworkAllTag(@PathParam("id") String id) {
         logger.info("Input  Network ID: {}", id );
@@ -502,13 +502,13 @@ public class NetworkREST {
     }
 
     @DELETE
-    @Path("/{id}/concepts/{concept}")
+    @Path("/{id}/tags/{tag}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response removeNetworkTag(@PathParam("id") String id, @PathParam("concept") String concept) {
+    public Response removeNetworkTag(@PathParam("id") String id, @PathParam("tag") String tag) {
         logger.info("Input  Network ID: {}", id );
-        logger.info("Input concept: {}", concept);
+        logger.info("Input tag: {}", tag);
 
-        ReturnType retType = coordinator.getSensorNetworkManager().removeTag(concept, id);
+        ReturnType retType = coordinator.getSensorNetworkManager().removeTag(tag, id);
 
         jsonDataMap.put(JsonKeyName.METHOD_NAME,"DELETE");
         jsonDataMap.put(JsonKeyName.SCOPE_NAME,"ONE");

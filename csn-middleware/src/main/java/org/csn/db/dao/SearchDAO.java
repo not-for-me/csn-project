@@ -29,14 +29,14 @@ public class SearchDAO {
         this.sensorDataTable = mongoDB.getCollection("SensorData");
     }
 
-    public Set<String> searchNetworkWithTag(String concept) {
+    public Set<String> searchNetworkWithTag(String tag) {
         Set<String> idSet = new HashSet<String>();
         try {
             Connection c = connectionMaker.makeConnection();
             PreparedStatement ps = c.prepareStatement(
-                    "SELECT sn_id FROM csn_concept_relation WHERE concept_id = ?");
-            String concept_id = tagDAO.getTagID(concept);
-            ps.setString(1, concept_id);
+                    "SELECT sn_id FROM csn_annotate WHERE tag_id = ?");
+            String tag_id = tagDAO.getTagID(tag);
+            ps.setString(1, tag_id);
             ResultSet rs = ps.executeQuery();
             while(rs.next())
                 idSet.add(rs.getString(1));
@@ -50,22 +50,22 @@ public class SearchDAO {
         return idSet;
     }
 
-    public Set<String> searchNetworkWithConcepts(Set<String> concepts) {
+    public Set<String> searchNetworkWithConcepts(Set<String> tags) {
         Set<String> idSet = new HashSet<String>();
         try {
             Connection c = connectionMaker.makeConnection();
 
-            String query_partial = "SELECT sn_id FROM csn_concept_relation WHERE concept_id IN (";
+            String query_partial = "SELECT sn_id FROM csn_annotate WHERE tag_id IN (";
             int i = 0;
-            Iterator<String> iter = concepts.iterator();
-            while( i < concepts.size() - 1 ) {
-                String concept_id = tagDAO.getTagID(iter.next());
-                query_partial = query_partial + concept_id + ", ";
+            Iterator<String> iter = tags.iterator();
+            while( i < tags.size() - 1 ) {
+                String tag_id = tagDAO.getTagID(iter.next());
+                query_partial = query_partial + tag_id + ", ";
                 i++;
             }
-            String concept_id = tagDAO.getTagID(iter.next());
-            query_partial = query_partial + concept_id + ")";
-            query_partial = query_partial + " GROUP BY sn_id HAVING COUNT(concept_id) = " + concepts.size();
+            String tag_id = tagDAO.getTagID(iter.next());
+            query_partial = query_partial + tag_id + ")";
+            query_partial = query_partial + " GROUP BY sn_id HAVING COUNT(tag_id) = " + tags.size();
 
             System.out.println(query_partial);
             PreparedStatement ps = c.prepareStatement(query_partial);

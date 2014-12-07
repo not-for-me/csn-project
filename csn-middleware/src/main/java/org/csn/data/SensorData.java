@@ -3,53 +3,53 @@ package org.csn.data;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SensorData {
-    private String ID;
-    private String Timestamp;
-    private String Value;
+    private String id;
+    private String timestamp;
+    private String value;
 
     public SensorData() {
 
     }
 
-    public SensorData (String ID, String Timestamp, String Value) {
-        this.ID = ID;
-        this.Timestamp = Timestamp;
-        this.Value = Value;
+    public SensorData(String id, String Timestamp, String Value) {
+        this.id = id;
+        this.timestamp = Timestamp;
+        this.value = Value;
     }
 
-    public String getID() {
-        return ID;
+    public String getId() {
+        return id;
     }
 
-    @JsonProperty("ID")
-    public void setID(String ID) {
-        this.ID = ID;
+    @JsonProperty("id")
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getTimestamp() {
-        return Timestamp;
+        return timestamp;
     }
 
-    @JsonProperty("Timestamp")
+    @JsonProperty("timestamp")
     public void setTimestamp(String timestamp) {
-        this.Timestamp = timestamp;
+        this.timestamp = timestamp;
     }
 
     public String getValue() {
-        return Value;
+        return value;
     }
 
-    @JsonProperty("Value")
+    @JsonProperty("value")
     public void setValue(String value) {
-        this.Value = value;
+        this.value = value;
     }
 
     @Override
     public String toString() {
         return "SensorData{" +
-                "ID='" + ID + '\'' +
-                ", Timestamp='" + Timestamp + '\'' +
-                ", Value='" + Value + '\'' +
+                "id='" + id + '\'' +
+                ", timestamp='" + timestamp + '\'' +
+                ", value='" + value + '\'' +
                 '}';
     }
 }
