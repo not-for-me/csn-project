@@ -1,7 +1,6 @@
 package org.csn.client.impl;
 
-/**
- * Created by NFM on 14. 12. 7..
- */
-public class SensorNetworkAPIImpl {
+import org.csn.client.SensorNetworkAPI;
+
+public class SensorNetworkAPIImpl implements SensorNetworkAPI {
 }

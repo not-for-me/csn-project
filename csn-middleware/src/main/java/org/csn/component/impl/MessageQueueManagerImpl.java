@@ -1,12 +1,12 @@
 package org.csn.component.impl;
 
-import org.csn.component.MessageQueueManager;
-import org.csn.data.ReturnType;
 import org.apache.activemq.broker.BrokerFactory;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.jmx.BrokerViewMBean;
 import org.apache.activemq.broker.jmx.HealthViewMBean;
 import org.apache.activemq.broker.jmx.TopicViewMBean;
+import org.csn.component.MessageQueueManager;
+import org.csn.data.ReturnType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,19 +25,15 @@ import java.util.Map;
 import java.util.Set;
 
 public class MessageQueueManagerImpl implements MessageQueueManager {
+    private static final String JMX_SERVICE_URL = "service:jmx:rmi:///jndi/rmi://localhost:1099/jmxrmi";
+    private static final String BROKER_OBJECT_NAME = "org.apache.activemq:brokerName=localhost,type=Broker";
+    private static final String HEALTH_OBJECT_NAME = "org.apache.activemq:type=Broker,brokerName=localhost,service=Health";
     Logger logger = LoggerFactory.getLogger(this.getClass());
-
     private BrokerService service;
     private JMXServiceURL jmxURL;
     private JMXConnector jmxConnector;
-
-    private static final String JMX_SERVICE_URL = "service:jmx:rmi:///jndi/rmi://localhost:1099/jmxrmi";
     private MBeanServerConnection mBeanConn;
     private ObjectName objectName;
-    private static final String BROKER_OBJECT_NAME = "org.apache.activemq:brokerName=localhost,type=Broker";
-    private static final String HEALTH_OBJECT_NAME = "org.apache.activemq:type=Broker,brokerName=localhost,service=Health";
-
-
     private BrokerViewMBean brokerMBean;
     private HealthViewMBean healthMBean;
 
@@ -92,9 +88,9 @@ public class MessageQueueManagerImpl implements MessageQueueManager {
         long retCNT = 0;
         ObjectName[] names = brokerMBean.getTopics();
         Map<String, Long> map = new HashMap<String, Long>();
-        for(ObjectName name : names) {
+        for (ObjectName name : names) {
             TopicViewMBean topicMBean = (TopicViewMBean) MBeanServerInvocationHandler.newProxyInstance(mBeanConn, name, TopicViewMBean.class, true);
-            if(topicMBean.getName().substring(0, 8).compareTo("ActiveMQ") != 0 &&
+            if (topicMBean.getName().substring(0, 8).compareTo("ActiveMQ") != 0 &&
                     topicMBean.getName().compareTo(topicPath) == 0) {
                 retCNT = topicMBean.getEnqueueCount();
             }
@@ -107,9 +103,9 @@ public class MessageQueueManagerImpl implements MessageQueueManager {
         long retCNT = 0;
         ObjectName[] names = brokerMBean.getTopics();
         Map<String, Long> map = new HashMap<String, Long>();
-        for(ObjectName name : names) {
+        for (ObjectName name : names) {
             TopicViewMBean topicMBean = (TopicViewMBean) MBeanServerInvocationHandler.newProxyInstance(mBeanConn, name, TopicViewMBean.class, true);
-            if(topicMBean.getName().substring(0, 8).compareTo("ActiveMQ") != 0 &&
+            if (topicMBean.getName().substring(0, 8).compareTo("ActiveMQ") != 0 &&
                     topicMBean.getName().compareTo(topicPath) == 0) {
                 retCNT = topicMBean.getDequeueCount();
             }
@@ -122,9 +118,9 @@ public class MessageQueueManagerImpl implements MessageQueueManager {
         long retCNT = 0;
         ObjectName[] names = brokerMBean.getTopics();
         Map<String, Long> map = new HashMap<String, Long>();
-        for(ObjectName name : names) {
+        for (ObjectName name : names) {
             TopicViewMBean topicMBean = (TopicViewMBean) MBeanServerInvocationHandler.newProxyInstance(mBeanConn, name, TopicViewMBean.class, true);
-            if(topicMBean.getName().substring(0, 8).compareTo("ActiveMQ") != 0 &&
+            if (topicMBean.getName().substring(0, 8).compareTo("ActiveMQ") != 0 &&
                     topicMBean.getName().compareTo(topicPath) == 0) {
                 retCNT = topicMBean.getProducerCount();
             }
@@ -137,9 +133,9 @@ public class MessageQueueManagerImpl implements MessageQueueManager {
         long retCNT = 0;
         ObjectName[] names = brokerMBean.getTopics();
         Map<String, Long> map = new HashMap<String, Long>();
-        for(ObjectName name : names) {
+        for (ObjectName name : names) {
             TopicViewMBean topicMBean = (TopicViewMBean) MBeanServerInvocationHandler.newProxyInstance(mBeanConn, name, TopicViewMBean.class, true);
-            if(topicMBean.getName().substring(0, 8).compareTo("ActiveMQ") != 0 &&
+            if (topicMBean.getName().substring(0, 8).compareTo("ActiveMQ") != 0 &&
                     topicMBean.getName().compareTo(topicPath) == 0) {
                 retCNT = topicMBean.getEnqueueCount();
             }
@@ -173,6 +169,11 @@ public class MessageQueueManagerImpl implements MessageQueueManager {
     @Override
     public ReturnType stopDataDeliverer() {
         try {
+            if (jmxConnector != null) try {
+                jmxConnector.close();
+            } catch (IOException ie) {
+                ie.printStackTrace();
+            }
             service.stop();
             logger.info("finish to stop Data Deliverer");
             return ReturnType.Done;
@@ -211,7 +212,7 @@ public class MessageQueueManagerImpl implements MessageQueueManager {
         getBrokerMBean();
         ObjectName[] names = brokerMBean.getTopicSubscribers();
         Set<String> subscribers = new HashSet<String>();
-        for(ObjectName name : names) {
+        for (ObjectName name : names) {
             subscribers.add(name.toString());
         }
         return subscribers;
@@ -251,10 +252,10 @@ public class MessageQueueManagerImpl implements MessageQueueManager {
     public Set<Map<String, Object>> getAllTopicStatus() {
         getBrokerMBean();
         ObjectName[] names = brokerMBean.getTopics();
-        Set<Map<String, Object>>  topicSet = new HashSet<Map<String, Object>>();
-        for(ObjectName name : names) {
+        Set<Map<String, Object>> topicSet = new HashSet<Map<String, Object>>();
+        for (ObjectName name : names) {
             TopicViewMBean topicMBean = (TopicViewMBean) MBeanServerInvocationHandler.newProxyInstance(mBeanConn, name, TopicViewMBean.class, true);
-            if(topicMBean.getName().substring(0, 8).compareTo("ActiveMQ") != 0) {
+            if (topicMBean.getName().substring(0, 8).compareTo("ActiveMQ") != 0) {
                 Map<String, Object> tempMap = new HashMap<String, Object>();
                 tempMap.put("topicName", topicMBean.getName());
                 tempMap.put("outNum", topicMBean.getDequeueCount());
@@ -270,9 +271,9 @@ public class MessageQueueManagerImpl implements MessageQueueManager {
         getBrokerMBean();
         ObjectName[] names = brokerMBean.getTopics();
         Map<String, Long> map = new HashMap<String, Long>();
-        for(ObjectName name : names) {
+        for (ObjectName name : names) {
             TopicViewMBean topicMBean = (TopicViewMBean) MBeanServerInvocationHandler.newProxyInstance(mBeanConn, name, TopicViewMBean.class, true);
-            if(topicMBean.getName().substring(0, 8).compareTo("ActiveMQ") != 0)
+            if (topicMBean.getName().substring(0, 8).compareTo("ActiveMQ") != 0)
                 map.put(topicMBean.getName(), topicMBean.getConsumerCount());
         }
         return map;
@@ -283,12 +284,12 @@ public class MessageQueueManagerImpl implements MessageQueueManager {
         getBrokerMBean();
         ObjectName[] names = brokerMBean.getTopics();
         Map<String, Set<String>> map = new HashMap<String, Set<String>>();
-        for(ObjectName name : names) {
+        for (ObjectName name : names) {
             TopicViewMBean topicMBean = (TopicViewMBean) MBeanServerInvocationHandler.newProxyInstance(mBeanConn, name, TopicViewMBean.class, true);
             Set<String> subscribers = new HashSet<String>();
             try {
                 ObjectName[] subNames = topicMBean.getSubscriptions();
-                for(ObjectName subName : subNames) {
+                for (ObjectName subName : subNames) {
                     subscribers.add(subName.getCanonicalName());
                 }
             } catch (IOException e) {

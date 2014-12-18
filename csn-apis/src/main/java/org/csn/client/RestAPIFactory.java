@@ -1,6 +1,7 @@
 package org.csn.client;
 
 import org.csn.client.impl.CSNAPIImpl;
+import org.csn.client.impl.SearchAPIImpl;
 import org.csn.client.impl.SensorNetworkAPIImpl;
 
 public class RestAPIFactory {
@@ -12,7 +13,7 @@ public class RestAPIFactory {
         return new SensorNetworkAPIImpl();
     }
 
-    public SensorNetworkAPI searchAPI() {
+    public SearchAPI searchAPI() {
         return new SearchAPIImpl();
     }
 
