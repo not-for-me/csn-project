@@ -180,10 +180,9 @@ public class CoordinatorREST {
     @Path("/broker/topics")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getBrokerMessageNum() {
-        try { logger.info("Data which is sent: {}", mapper.writeValueAsString(jsonDataMap)); } catch (JsonProcessingException e) { e.printStackTrace(); }
         Map<String, Set<Map<String,Object>>> retMap = new HashMap<>();
         retMap.put("data",  coordinator.getMessageQueueManager().getAllTopicStatus() );
-
+        try { logger.info("Data which is sent: {}", mapper.writeValueAsString(retMap)); } catch (JsonProcessingException e) { e.printStackTrace(); }
         return Response.ok(retMap, MediaType.APPLICATION_JSON).build();
     }
 }

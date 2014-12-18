@@ -8,14 +8,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 
-public class RESTMethodAPI {
+public class HTTPRequestMethod {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private Client client = ClientBuilder.newClient();
     //private Invocation.Builder invocationBuilder;
     private Response response;
     private String output;
 
-//    public void setUpREST(String url, String input, HttpMethod method ) {
+//    public void setUpREST(String url, String input, HttpMethodType method ) {
 //        logger.info("Input URL: {}", url);
 //        webTarget = client.target(url);
 //
@@ -33,7 +33,7 @@ public class RESTMethodAPI {
 //        }
 //    }
 
-//    public String tearDownREST(HttpMethod method) {
+//    public String tearDownREST(HttpMethodType method) {
 //        switch (method) {
 //            case POST:
 //            case PUT:

@@ -1,6 +1,6 @@
 package org.csn.common;
 
-public enum HttpMethod {
+public enum HttpMethodType {
     POST,
     GET,
     PUT,
