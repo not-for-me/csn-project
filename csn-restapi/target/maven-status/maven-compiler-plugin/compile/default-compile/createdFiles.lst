@@ -1,8 +1,0 @@
-org/csn/rest/NetworkREST.class
-org/csn/rest/CoordinatorREST.class
-org/csn/exception/NotFoundException.class
-org/csn/data/NetworkSeed.class
-org/csn/rest/SearchREST.class
-org/csn/rest/TagREST.class
-org/csn/data/TagObject.class
-org/csn/data/JsonKeyName.class
