@@ -1,0 +1,12 @@
+<csn-conf>
+  <db>
+    <url>jdbc:mysql://localhost:3306/csn</url>
+    <user>root</user>
+    <password>root</password>
+  </db>
+  <persistentDB>
+    <url>localhost</url>
+    <port>27017</port>
+    <dbName>CSN</dbName>
+  </persistentDB>
+</csn-conf>
