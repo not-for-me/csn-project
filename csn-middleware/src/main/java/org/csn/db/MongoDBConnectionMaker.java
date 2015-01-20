@@ -16,8 +16,8 @@ public class MongoDBConnectionMaker {
     private DB db;
 
     public MongoDBConnectionMaker() {
-        String dbPath =  this.getClass().getClassLoader().getResource("").getPath() + "../configuration.xml";
-        Map<String, String> connInfoMap = CSNXMLParser.getPersitentDBConnInfo(dbPath);
+        String filePath =  this.getClass().getClassLoader().getResource("").getPath() + "../configuration.xml";
+        Map<String, String> connInfoMap = CSNXMLParser.getPersitentDBConnInfo(filePath);
         try {
             mongoClient = new MongoClient(connInfoMap.get("url"), Integer.parseInt(connInfoMap.get("port")));
             db = mongoClient.getDB(connInfoMap.get("dbName"));

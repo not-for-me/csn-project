@@ -9,4 +9,9 @@
     <port>27017</port>
     <dbName>CSN</dbName>
   </persistentDB>
+  <adapters>
+  	<socket>
+  		<port>55555</port>
+  	</socket>
+  </adapters>
 </csn-conf>

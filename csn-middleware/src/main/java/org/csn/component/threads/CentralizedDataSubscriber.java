@@ -24,7 +24,7 @@ public class CentralizedDataSubscriber extends Thread implements MqttCallback{
 
     private volatile boolean stopped = false;
 
-    public CentralizedDataSubscriber(String name, BlockingQueue queue) {
+    public CentralizedDataSubscriber(String name, BlockingQueue<SensorData> queue) {
         super(name);
         this.queue = queue;
         jsonMapper = new ObjectMapper();
@@ -67,7 +67,6 @@ public class CentralizedDataSubscriber extends Thread implements MqttCallback{
 
     @Override
     public void connectionLost(Throwable throwable) {
-        // TODO Need to be implemented for Connection Lost Error
         logger.warn("Connection lost!");
     }
 

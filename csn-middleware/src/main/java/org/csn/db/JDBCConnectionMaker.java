@@ -15,8 +15,8 @@ public class JDBCConnectionMaker implements ConnectionMaker {
 
     public Connection makeConnection() throws ClassNotFoundException, SQLException, IOException {
         Class.forName("com.mysql.jdbc.Driver");
-        String dbPath =  this.getClass().getClassLoader().getResource("").getPath() + "../configuration.xml";
-        Map<String, String> connInfoMap = CSNXMLParser.getDBConnInfo(dbPath);
+        String filePath =  this.getClass().getClassLoader().getResource("").getPath() + "../configuration.xml";
+        Map<String, String> connInfoMap = CSNXMLParser.getDBConnInfo(filePath);
 
         Connection c = DriverManager.getConnection(
                 connInfoMap.get("url"),

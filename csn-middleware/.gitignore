@@ -1,3 +1,4 @@
+#
 # Created by https://www.gitignore.io
 
 ### Java ###
@@ -133,3 +134,5 @@ local.properties
 
 # TeXlipse plugin
 .texlipse
+
+dependency-reduced-pom.xml
