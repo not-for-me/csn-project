@@ -1,10 +1,11 @@
 package org.csn.component;
 
-import org.csn.data.ReturnType;
-import org.csn.data.SensorNetwork;
-
 import java.util.Map;
 import java.util.Set;
+
+import org.csn.data.NetworkMetadata;
+import org.csn.data.ReturnType;
+import org.csn.data.SensorNetwork;
 
 public interface SensorNetworkManager {
     public boolean isNetworkID(String id);
@@ -16,7 +17,7 @@ public interface SensorNetworkManager {
      * @param members the set consisted of sensor networks as a member
      * @return If successfully done, it returns the id of network, or null.
      */
-    public String registerNetwork(String name, Set<String> members, Set<String> tags);
+    public String registerNetwork(String name, Set<String> members, Set<NetworkMetadata> metadata, Set<String> tags);
 
     /**
      * This method returns all network instances.
@@ -24,6 +25,13 @@ public interface SensorNetworkManager {
      * @return If successfully done, it returns all instances of networks, or null.
      */
     public Set<SensorNetwork> getAllNetworkResources();
+    
+    /**
+     * This method returns all network instances.
+     *
+     * @return If successfully done, it returns all instances of networks, or null.
+     */
+    public Set<SensorNetwork> getNetworkResources(int index, int num);
 
     /**
      * This method deactivates all networks in the database;
@@ -244,7 +252,7 @@ public interface SensorNetworkManager {
      * @param input_metadata key-value metadata input
      * @return If successfully done, it returns Done, or Error.
      */
-    public ReturnType addMetadata(String id, Map<String, String> input_metadata);
+    public ReturnType addMetadata(String id, Set<NetworkMetadata> input_metadata);
 
     /**
      * This method returns network's metadata map.
@@ -252,7 +260,7 @@ public interface SensorNetworkManager {
      * @param id Network's ID
      * @return If successfully done, it returns map of metadata, or null
      */
-    public Map<String, String> getMetadata(String id);
+    public Set<NetworkMetadata> getMetadata(String id);
 
     /**
      * This method returns the set of network's metadata keys.

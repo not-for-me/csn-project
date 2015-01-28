@@ -2,6 +2,7 @@ package org.csn.component.impl;
 
 import org.csn.component.SensorNetworkManager;
 import org.csn.data.NetworkMappingMap;
+import org.csn.data.NetworkMetadata;
 import org.csn.data.NetworkType;
 import org.csn.data.ReturnType;
 import org.csn.data.SensorNetwork;
@@ -37,10 +38,13 @@ public class SensorNetworkManagerImpl implements SensorNetworkManager {
     }
 
     @Override
-    public String registerNetwork(String name, Set<String> members, Set<String> tags) {
+    public String registerNetwork(String name, Set<String> members, Set<NetworkMetadata> metadata, Set<String> tags) {
         boolean isSingle = false;
         int memberNum = ( members == null ) ? 1 : members.size();
         String id = sensorNetworkDAO.registerNetwork(name, memberNum);
+        
+        sensorNetworkDAO.addMetadata(id, metadata);
+        
         if(tags != null)
             tagDAO.addTag(tags, id);
         if( members == null ) {
@@ -77,6 +81,11 @@ public class SensorNetworkManagerImpl implements SensorNetworkManager {
     @Override
     public Set<SensorNetwork> getAllNetworkResources() {
         return sensorNetworkDAO.getAllNetworks();
+    }
+    
+    @Override
+    public Set<SensorNetwork> getNetworkResources(int index, int num) {
+        return sensorNetworkDAO.getNetworks(index, num);
     }
 
     @Override
@@ -245,17 +254,17 @@ public class SensorNetworkManagerImpl implements SensorNetworkManager {
 
     @Override
     public ReturnType addMetadata(String id, String key, String value) {
-        return null;
+        return sensorNetworkDAO.addMetadata(id, key, value);
     }
 
     @Override
-    public ReturnType addMetadata(String id, Map<String, String> input_metadata) {
-        return null;
+    public ReturnType addMetadata(String id, Set<NetworkMetadata> input_metadata) {
+        return sensorNetworkDAO.addMetadata(id, input_metadata);
     }
 
     @Override
-    public Map<String, String> getMetadata(String id) {
-        return null;
+    public Set<NetworkMetadata> getMetadata(String id) {
+        return sensorNetworkDAO.getMetadata(id);
     }
 
     @Override

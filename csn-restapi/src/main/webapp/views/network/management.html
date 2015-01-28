@@ -1,0 +1,54 @@
+<div class="col-md-12 col-sm-12 col-xs-12" ng-init="getSensorNetworkCount()"> <div class="page-header"> <h1>Sensor Network Management</h1> </div> <div class="row col-md-12 col-sm-12 col-xs-12"> <div class="col-box col-md-8 col-sm-8 col-xs-12"> <div class="panel panel-default"> <div class="panel-heading"> <h3 class="panel-title">Register Sensor Network</h3> </div> <script type="text/ng-template" id="myModalContent.html"><div class="col-md-12 modal-header" style="background: #fff;border-top-left-radius: 6px;border-top-right-radius: 6px;">
+			            <h3 class="modal-title">Add member networks</h3>
+			        </div>
+			        <div class="modal-body col-md-12" style="background:#fff">
+			        	<div class="col-md-6">
+			        		<input type="text" class="form-control" ng-model="tempTag"> 
+			        	</div>
+			        	<div class="col-md-6 text-right">
+			        		<button class="btn btn-primary" ng-click="addSearchTerm()">Add Tag</button>
+			        	</div>
+			        	<div class="col-md-6">
+			        		<h4>Tags for Searching Network: </h4>
+			        	</div>
+			        	<div class="col-md-6">
+			        		<h4><span style="margin:2%;" class="label label-default" ng-repeat="tag in search.tags">{{tag}}</span></h4>
+			        	</div>
+			        	<div class="col-md-12 text-center">
+			            	<button class="btn btn-primary" ng-click="searchNetworkWithTag()">Find Members</button>
+			            </div>
+			            <div class="col-md-12 text-center">
+			            	<h4>Search Result</h4>
+			            </div>
+			            <div class="col-md-12 text-center">
+				        	<ul class="list-group">
+				                <li class="list-group-item" ng-repeat="member in search.members">{{member}}</li>
+				            </ul>
+			            </div>
+			        </div>
+			        <div class="modal-footer col-md-12" style="margin-top: 0px;background: #fff;border-bottom-left-radius: 6px;border-bottom-right-radius: 6px;">
+			            <button class="btn btn-primary" ng-click="ok()">Add</button>
+			            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+			        </div></script> <script type="text/ng-template" id="myModalContent2.html"><div class="col-md-12 modal-header" style="background: #fff;border-top-left-radius: 6px;border-top-right-radius: 6px;">
+			            <h3 class="modal-title">Add a member network</h3>
+			        </div>
+			        <div class="modal-body col-md-12" style="background:#fff">
+			        	<div class="col-md-6">
+			        		<input type="text" class="form-control" ng-model="tempMember">
+			        	</div>
+			        	<div class="col-md-6 text-right">
+			            	<button class="btn btn-primary" ng-click="addTempMember()">Add Member</button>
+			            </div>
+			            <div class="col-md-12 text-center">
+			            	<h4>Current Members</h4>
+			            </div>
+			            <div class="col-md-12 text-center">
+				        	<ul class="list-group">
+				                <li class="list-group-item" ng-repeat="member in temp.members">{{member}}</li>
+				            </ul>
+			            </div>
+			        </div>
+			        <div class="modal-footer col-md-12" style="margin-top: 0px;background: #fff;border-bottom-left-radius: 6px;border-bottom-right-radius: 6px;">
+			            <button class="btn btn-primary" ng-click="ok()">OK</button>
+			            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+			        </div></script> <div class="panel-body"> <table class="table table-bordered"> <tbody> <tr class="text-center" style="cursor: pointer"> <th>Name <td colspan="2"><input type="text" class="form-control" ng-model="newNetwork.name" val="newNetwork.name">  <tr class="text-center" style="cursor: pointer"> <th>Member <td colspan="2"> <button class="btn btn-default" style="width:100%" ng-click="open()">Search</button> <button class="btn btn-default" style="width:100%" ng-click="open2()">Add</button>   <tr class="text-center" style="cursor: pointer"> <th rowspan="3">Metadata <td>Key <td><input type="text" class="form-control" ng-model="temp.metaKey" val="temp.metaKey">  <tr class="text-center" style="cursor: pointer"> <td>Value <td><input type="text" class="form-control" ng-model="temp.metaValue" val="temp.metaValue">  <tr class="text-center" style="cursor: pointer"> <td colspan="2"><button class="btn btn-default" style="width:100%" ng-click="addMetadata()">Add Metadata</button>  <tr class="text-center" style="cursor: pointer"> <th rowspan="2">Tag <td colspan="2"><input type="text" class="form-control" ng-model="temp.tag" val="temp.tag">  <tr class="text-center" style="cursor: pointer"> <td colspan="2"><button class="btn btn-default" style="width:100%" ng-click="addTag()">Add Tag</button>   </table> </div> <!-- [panel body] --> </div> <!-- [panel] --> </div> <!-- [1st col-box] Register Network --> <div class="col-box col-md-4 col-sm-4 col-xs-12"> <div class="panel panel-default"> <div class="panel-heading"> <h3 class="panel-title">Current Sensor Network Data</h3> </div> <div class="panel-body"> <table class="table table-bordered"> <tbody> <tr class="text-center" style="cursor: pointer"> <th>Name <td>{{newNetwork.name}}  <tr class="text-center" style="cursor: pointer"> <th>Members <td> <ul class="list-group"> <li class="list-group-item" ng-repeat="member in newNetwork.members">{{member}}</li> </ul>   <tr class="text-center" style="cursor: pointer"> <th>Metadata <td> <ul class="list-group"> <li class="list-group-item" ng-repeat="metadata in newNetwork.metadata">{{metadata.key}} : {{metadata.value}}</li> </ul>   <tr class="text-center" style="cursor: pointer"> <th>Tags <td> <ul class="list-group"> <li class="list-group-item" ng-repeat="tag in newNetwork.tags">{{tag}}</li> </ul>    </table> <div class="text-center"> <button class="btn btn-primary" style="width:100%" ng-click="setSensorNetworkMeta()">Create Sensor Network</button> </div> </div> <!-- [panel body] --> </div> <!-- [panel] --> </div> <!-- [2nd col-box] Temporary Network --> </div> <!--[1st row] div --> <div class="row col-md-12 col-sm-12 col-xs-12" ng-init="getSensorNetworks(1)"> <div class="panel panel-default"> <div class="panel-heading"> <h3 class="panel-title">Deregister Sensor Network</h3> </div> <div class="panel-body"> <table class="table table-bordered"> <thead> <tr> <th class="text-center">ID <th class="text-center">Name <th class="text-center">Status <th class="text-center">Member Network Count <th class="text-center">Deregister   <tbody> <tr class="text-center" style="cursor: pointer" ng-repeat="network in snData.networks"> <td>{{network.id}} <td>{{network.name}} <td>{{network.status}} <td>{{network.memberCount}} <td> <button class="btn btn-danger btn-default" ng-click="deleteNetwork(network.id)">Deregister: {{network.id}}</button>    </table> <div class="text-center"> <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" items-per-page="itemsPerPage" ng-change="getSensorNetworks(currentPage)" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination> </div> </div> </div> <!-- [panel] --> </div> <!--[2nd row] Deregister panel div --> </div>

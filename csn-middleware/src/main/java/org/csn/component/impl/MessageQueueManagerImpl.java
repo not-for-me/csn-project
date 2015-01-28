@@ -36,7 +36,7 @@ public class MessageQueueManagerImpl implements MessageQueueManager {
     private ObjectName objectName;
     private BrokerViewMBean brokerMBean;
     private HealthViewMBean healthMBean;
-
+  
     private void connectDefaultJMX(String objName) {
         try {
             jmxURL = new JMXServiceURL(JMX_SERVICE_URL);
@@ -65,7 +65,6 @@ public class MessageQueueManagerImpl implements MessageQueueManager {
 
     @Override
     public void createTopic(String topicPath) {
-        getBrokerMBean();
         try {
             brokerMBean.addTopic(topicPath);
         } catch (Exception e) {
@@ -75,7 +74,6 @@ public class MessageQueueManagerImpl implements MessageQueueManager {
 
     @Override
     public void removeTopic(String topicPath) {
-        getBrokerMBean();
         try {
             brokerMBean.removeTopic(topicPath);
         } catch (Exception e) {
@@ -156,6 +154,9 @@ public class MessageQueueManagerImpl implements MessageQueueManager {
 
     @Override
     public ReturnType startDataDeliverer() {
+    	getBrokerMBean();
+    	getHealthMBean();
+    	
         try {
             service.start();
             logger.info("Finish to start Data Deliverer");
@@ -185,31 +186,26 @@ public class MessageQueueManagerImpl implements MessageQueueManager {
 
     @Override
     public long getTotalMSGEnqueueCount() {
-        getBrokerMBean();
         return brokerMBean.getTotalEnqueueCount();
     }
 
     @Override
     public long getTotalMSGDequeueCount() {
-        getBrokerMBean();
         return brokerMBean.getTotalDequeueCount();
     }
 
     @Override
     public long getTotalConsumerCount() {
-        getBrokerMBean();
         return brokerMBean.getTotalConsumerCount();
     }
 
     @Override
     public long getTotalProducerCount() {
-        getBrokerMBean();
         return brokerMBean.getTotalProducerCount();
     }
 
     @Override
     public Set<String> getTopicSubscribers() {
-        getBrokerMBean();
         ObjectName[] names = brokerMBean.getTopicSubscribers();
         Set<String> subscribers = new HashSet<String>();
         for (ObjectName name : names) {
@@ -220,19 +216,16 @@ public class MessageQueueManagerImpl implements MessageQueueManager {
 
     @Override
     public int getStoreUsagePercentage() {
-        getBrokerMBean();
         return brokerMBean.getStorePercentUsage();
     }
 
     @Override
     public int getMemoryUsagePercentage() {
-        getBrokerMBean();
         return brokerMBean.getMemoryPercentUsage();
     }
 
     @Override
     public ReturnType doGarbageCollect() {
-        getBrokerMBean();
         try {
             brokerMBean.gc();
             return ReturnType.Done;
@@ -250,7 +243,6 @@ public class MessageQueueManagerImpl implements MessageQueueManager {
 
     @Override
     public Set<Map<String, Object>> getAllTopicStatus() {
-        getBrokerMBean();
         ObjectName[] names = brokerMBean.getTopics();
         Set<Map<String, Object>> topicSet = new HashSet<Map<String, Object>>();
         for (ObjectName name : names) {
@@ -268,7 +260,6 @@ public class MessageQueueManagerImpl implements MessageQueueManager {
 
     @Override
     public Map<String, Long> getAllTopicConsumerCount() {
-        getBrokerMBean();
         ObjectName[] names = brokerMBean.getTopics();
         Map<String, Long> map = new HashMap<String, Long>();
         for (ObjectName name : names) {
@@ -281,7 +272,6 @@ public class MessageQueueManagerImpl implements MessageQueueManager {
 
     @Override
     public Map<String, Set<String>> getAllTopicSubscribers() {
-        getBrokerMBean();
         ObjectName[] names = brokerMBean.getTopics();
         Map<String, Set<String>> map = new HashMap<String, Set<String>>();
         for (ObjectName name : names) {
@@ -305,7 +295,6 @@ public class MessageQueueManagerImpl implements MessageQueueManager {
 
     @Override
     public String getCurrentHealthStatus() {
-        getHealthMBean();
         return healthMBean.getCurrentStatus();
     }
 }

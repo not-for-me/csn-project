@@ -7,8 +7,10 @@ import org.csn.db.CSNDAOFactory;
 import org.csn.db.dao.SearchDAO;
 import org.csn.data.JsonKeyName;
 import org.csn.exception.NotFoundException;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +21,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,11 +41,12 @@ public class SearchREST {
     @Produces(MediaType.APPLICATION_JSON)
     public Response searchNetworksWithConcepts(@QueryParam("target") String target, Set<String> tags) {
         logger.info("Network Searching with Tags\n, {} ", tags.toString());
-
+        Map<String, Set<String>> retMap = new HashMap<String, Set<String>>();
+		
         Set<String> networks = searchDAO.searchNetworkWithConcepts(tags);
-
-        try { logger.info("Data which is sent: {}", mapper.writeValueAsString(networks)); } catch (JsonProcessingException e) { e.printStackTrace(); }
-        return Response.ok(networks, MediaType.APPLICATION_JSON).build();
+        retMap.put("searchResult", networks);
+        try { logger.info("Data which is sent: {}", mapper.writeValueAsString(retMap)); } catch (JsonProcessingException e) { e.printStackTrace(); }
+        return Response.ok(retMap, MediaType.APPLICATION_JSON).build();
     }
 
     @GET
