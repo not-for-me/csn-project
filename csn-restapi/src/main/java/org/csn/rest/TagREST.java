@@ -2,16 +2,19 @@ package org.csn.rest;
 
 import org.csn.component.Coordinator;
 import org.csn.data.ReturnType;
-import org.csn.data.JsonKeyName;
-import org.csn.data.TagObject;
+import org.csn.rest.data.JsonKeyName;
+import org.csn.rest.data.TagObject;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -65,7 +68,7 @@ public class TagREST {
             return Response.ok(tagSet, MediaType.APPLICATION_JSON).build();
         }
         else
-            throw new org.csn.exception.NotFoundException();
+            throw new org.csn.rest.exception.NotFoundException();
     }
 
     @POST

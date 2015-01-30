@@ -5,8 +5,8 @@ import org.csn.data.SensorData;
 import org.csn.data.SensorNetwork;
 import org.csn.db.CSNDAOFactory;
 import org.csn.db.dao.SearchDAO;
-import org.csn.data.JsonKeyName;
-import org.csn.exception.NotFoundException;
+import org.csn.rest.data.JsonKeyName;
+import org.csn.rest.exception.NotFoundException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

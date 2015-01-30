@@ -1,4 +1,4 @@
-package org.csn.exception;
+package org.csn.rest.exception;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;

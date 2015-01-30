@@ -18,11 +18,13 @@ import javax.ws.rs.core.Response;
 import org.csn.data.ReturnType;
 import org.csn.data.SensorNetwork;
 import org.csn.component.Coordinator;
-import org.csn.data.JsonKeyName;
-import org.csn.data.NetworkSeed;
-import org.csn.exception.NotFoundException;
+import org.csn.rest.data.JsonKeyName;
+import org.csn.rest.data.NetworkSeed;
+import org.csn.rest.exception.NotFoundException;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

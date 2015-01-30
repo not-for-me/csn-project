@@ -2,7 +2,6 @@ package org.csn.component.impl;
 
 import org.csn.component.SensorNetworkManager;
 import org.csn.data.NetworkMappingMap;
-import org.csn.data.NetworkMetadata;
 import org.csn.data.NetworkType;
 import org.csn.data.ReturnType;
 import org.csn.data.SensorNetwork;
@@ -38,25 +37,30 @@ public class SensorNetworkManagerImpl implements SensorNetworkManager {
     }
 
     @Override
-    public String registerNetwork(String name, Set<String> members, Set<NetworkMetadata> metadata, Set<String> tags) {
+    public String registerNetwork(String name, Set<String> members, Set<Map<String, String>> metadata, Set<String> tags) {
         boolean isSingle = false;
-        int memberNum = ( members == null ) ? 1 : members.size();
+        int memberNum = ( members.size() < 1 ) ? 1 : members.size();
         String id = sensorNetworkDAO.registerNetwork(name, memberNum);
         
-        sensorNetworkDAO.addMetadata(id, metadata);
-        
-        if(tags != null)
-            tagDAO.addTag(tags, id);
-        if( members == null ) {
+        if( memberNum == 1 ) {
+        	logger.info("Single Network Created");
             members = new HashSet<>();
             members.add(id);
             isSingle = true;
         }
-
+        
         String topicPath = ( isSingle ) ? TopicPathGenerator.getNetworkTopicPath(id, name, NetworkType.Single)
                 : TopicPathGenerator.getNetworkTopicPath(id, name, NetworkType.Multi);
-
+       
         _registerNetwork(id, members, topicPath);
+        
+        if(metadata != null)
+        	sensorNetworkDAO.addMetadata(id, metadata);
+        
+        if(tags != null)
+            tagDAO.addTag(tags, id);
+        
+        
         // Create another Single Network for the multi networks
 //        if(!isSingle){
 //            topicPath = TopicPathGenerator.getNetworkTopicPath(id, name, NetworkType.Single);
@@ -258,12 +262,12 @@ public class SensorNetworkManagerImpl implements SensorNetworkManager {
     }
 
     @Override
-    public ReturnType addMetadata(String id, Set<NetworkMetadata> input_metadata) {
+    public ReturnType addMetadata(String id, Set<Map<String, String>> input_metadata) {
         return sensorNetworkDAO.addMetadata(id, input_metadata);
     }
 
     @Override
-    public Set<NetworkMetadata> getMetadata(String id) {
+    public Set<Map<String, String>> getMetadata(String id) {
         return sensorNetworkDAO.getMetadata(id);
     }
 

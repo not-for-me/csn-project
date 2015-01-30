@@ -1,11 +1,12 @@
-package org.csn.data;
+package org.csn.rest.data;
 
+import java.util.Map;
 import java.util.Set;
 
 public class NetworkSeed {
 	private String name;
 	Set<String> members;
-	Set<NetworkMetadata> metadata;
+	Set<Map<String, String>> metadata;
 	Set<String> tags;
 
 	public String getName() {
@@ -24,11 +25,11 @@ public class NetworkSeed {
 		this.members = members;
 	}
 
-	public Set<NetworkMetadata> getMetadata() {
+	public Set<Map<String, String>> getMetadata() {
 		return metadata;
 	}
 
-	public void setMetadata(Set<NetworkMetadata> metadata) {
+	public void setMetadata(Set<Map<String, String>> metadata) {
 		this.metadata = metadata;
 	}
 

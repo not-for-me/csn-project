@@ -1,4 +1,4 @@
-package org.csn.data;
+package org.csn.rest.data;
 
 public class TagObject {
     String tag;

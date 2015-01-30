@@ -1,4 +1,4 @@
-package org.csn.data;
+package org.csn.rest.data;
 
 public class JsonKeyName {
 	public final static String RET_KEY_NAME = "ret";

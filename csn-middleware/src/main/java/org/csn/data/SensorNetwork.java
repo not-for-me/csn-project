@@ -1,5 +1,6 @@
 package org.csn.data;
 
+import java.util.Map;
 import java.util.Set;
 
 public class SensorNetwork {
@@ -13,12 +14,12 @@ public class SensorNetwork {
 	private int memberCount;
 	Set<String> memberList;
 	Set<String> tagSet;
-	Set<NetworkMetadata> metadataSet;
+	Set<Map<String, String>> metadataSet;
 
 	public SensorNetwork(String id, String name, String regTime,
 			String deRegTime, String status, int topicID, String topicPath,
 			int memberCount, Set<String> memberList, Set<String> tagSet,
-			Set<NetworkMetadata> metadataSet) {
+			Set<Map<String, String>> metadataSet) {
 		this.id = id;
 		this.name = name;
 		this.regTime = regTime;
@@ -112,11 +113,11 @@ public class SensorNetwork {
 		this.tagSet = tagSet;
 	}
 
-	public Set<NetworkMetadata> getMetadataSet() {
+	public Set<Map<String, String>> getMetadataSet() {
 		return metadataSet;
 	}
 
-	public void setMetadataSet(Set<NetworkMetadata> metadataSet) {
+	public void setMetadataSet(Set<Map<String, String>> metadataSet) {
 		this.metadataSet = metadataSet;
 	}
 

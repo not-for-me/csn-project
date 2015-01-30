@@ -3,10 +3,12 @@ package org.csn.rest;
 import org.csn.CSNProvider;
 import org.csn.component.Coordinator;
 import org.csn.data.CSNConfiguration;
+import org.csn.rest.data.JsonKeyName;
 import org.csn.util.TimeGenerator;
-import org.csn.data.JsonKeyName;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +16,7 @@ import javax.inject.Singleton;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;

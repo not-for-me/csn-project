@@ -1,6 +1,5 @@
 package org.csn.db.dao;
 
-import org.csn.data.NetworkMetadata;
 import org.csn.data.ReturnType;
 import org.csn.data.SensorNetwork;
 import org.csn.db.CSNDAOFactory;
@@ -16,7 +15,7 @@ import java.util.*;
 
 public class SensorNetworkDAO {
 	Logger logger = LoggerFactory.getLogger(this.getClass());
-	
+
 	private TagDAO tagDAO;
 	private ConnectionMaker connectionMaker;
 
@@ -141,12 +140,13 @@ public class SensorNetworkDAO {
 				String id = rs.getString("id");
 				Set<String> memberList = this.getMemberIDs(id);
 				Set<String> tagSet = tagDAO.getAllTags(id);
-				Set<NetworkMetadata> metadataSet = this.getMetadata(id);
+				Set<Map<String, String>> metadataSet = this.getMetadata(id);
 				SensorNetwork network = new SensorNetwork(id,
 						rs.getString("name"), rs.getString("reg_time"),
 						rs.getString("dereg_time"), rs.getString("status"),
 						rs.getInt("topic_id"), rs.getString("topic_path"),
-						rs.getInt("child_net_cnt"), memberList, tagSet, metadataSet);
+						rs.getInt("child_net_cnt"), memberList, tagSet,
+						metadataSet);
 				set.add(network);
 			}
 
@@ -173,12 +173,13 @@ public class SensorNetworkDAO {
 				String id = rs.getString("id");
 				Set<String> memberList = this.getMemberIDs(id);
 				Set<String> tagSet = tagDAO.getAllTags(id);
-				Set<NetworkMetadata> metadataSet = this.getMetadata(id);
+				Set<Map<String, String>> metadataSet = this.getMetadata(id);
 				SensorNetwork network = new SensorNetwork(id,
 						rs.getString("name"), rs.getString("reg_time"),
 						rs.getString("dereg_time"), rs.getString("status"),
 						rs.getInt("topic_id"), rs.getString("topic_path"),
-						rs.getInt("child_net_cnt"), memberList, tagSet, metadataSet);
+						rs.getInt("child_net_cnt"), memberList, tagSet,
+						metadataSet);
 				set.add(network);
 			}
 
@@ -504,12 +505,12 @@ public class SensorNetworkDAO {
 			if (rs.next()) {
 				Set<String> memberList = this.getMemberIDs(id);
 				Set<String> tagSet = tagDAO.getAllTags(id);
-				Set<NetworkMetadata> metadataSet = this.getMetadata(id);
-				network = new SensorNetwork(id,
-						rs.getString("name"), rs.getString("reg_time"),
-						rs.getString("dereg_time"), rs.getString("status"),
-						rs.getInt("topic_id"), rs.getString("topic_path"),
-						rs.getInt("child_net_cnt"), memberList, tagSet, metadataSet);
+				Set<Map<String, String>> metadataSet = this.getMetadata(id);
+				network = new SensorNetwork(id, rs.getString("name"),
+						rs.getString("reg_time"), rs.getString("dereg_time"),
+						rs.getString("status"), rs.getInt("topic_id"),
+						rs.getString("topic_path"), rs.getInt("child_net_cnt"),
+						memberList, tagSet, metadataSet);
 			}
 
 			ps.close();
@@ -790,15 +791,19 @@ public class SensorNetworkDAO {
 		ReturnType ret = ReturnType.Done;
 		try {
 
-			if (this.hasMetaKey(id, key))
-				return ReturnType.Error;
-
 			Connection c = connectionMaker.makeConnection();
-			PreparedStatement ps = c
-					.prepareStatement("INSERT INTO csn_sn_meta (sn_id, meta_key, meta_value) VALUES(?, ?, ?)");
-			ps.setString(1, id);
-			ps.setString(2, key);
-			ps.setString(3, key);
+			PreparedStatement ps = null;
+			if (this.hasMetaKey(id, key)) {
+				ps = c.prepareStatement("UPDATE csn_sn_meta SET meta_value =? WHERE sn_id = ? AND meta_key = ?)");
+				ps.setString(1, value);
+				ps.setString(2, id);
+				ps.setString(3, key);
+			} else {
+				ps = c.prepareStatement("INSERT INTO csn_sn_meta (sn_id, meta_key, meta_value) VALUES(?, ?, ?)");
+				ps.setString(1, id);
+				ps.setString(2, key);
+				ps.setString(3, value);
+			}
 
 			ps.executeUpdate();
 			ps.close();
@@ -810,11 +815,13 @@ public class SensorNetworkDAO {
 		return ret;
 	}
 
-	public ReturnType addMetadata(String id, Set<NetworkMetadata> input_metadata) {
+	public ReturnType addMetadata(String id,
+			Set<Map<String, String>> metadataSet) {
 		ReturnType ret = ReturnType.Done;
 		try {
-			for (NetworkMetadata metadata : input_metadata) {
-				ret = this.addMetadata(id, metadata.getKey(), metadata.getValue());
+			for (Map<String, String> metadata : metadataSet) {
+				ret = this.addMetadata(id, metadata.get("metaKey"),
+						metadata.get("metaValue"));
 				if (ret == ReturnType.Error)
 					throw new Exception("Can't Add a Metadata");
 			}
@@ -826,26 +833,28 @@ public class SensorNetworkDAO {
 		return ret;
 	}
 
-	public Set<NetworkMetadata> getMetadata(String id) {
-		Set<NetworkMetadata> metadataSet = new HashSet<NetworkMetadata>();
-        try {
-            Connection c = connectionMaker.makeConnection();
-            PreparedStatement ps = c.prepareStatement(
-                    "SELECT meta_key, meta_value FROM csn_sn_meta WHERE sn_id = ?");
-            ps.setString(1, id);
-            ResultSet rs = ps.executeQuery();
-            while(rs.next()) {
-            	NetworkMetadata newItem = new NetworkMetadata(rs.getString(1), rs.getString(2));
-                metadataSet.add(newItem);
-            }
+	public Set<Map<String, String>> getMetadata(String id) {
+		Set<Map<String, String>> metadataSet = new HashSet<Map<String, String>>();
+		try {
+			Connection c = connectionMaker.makeConnection();
+			PreparedStatement ps = c
+					.prepareStatement("SELECT meta_key, meta_value FROM csn_sn_meta WHERE sn_id = ?");
+			ps.setString(1, id);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				Map<String, String> newItem = new HashMap<String, String>();
+				newItem.put("metaKey", rs.getString(1));
+				newItem.put("metaValue", rs.getString(2));
+				metadataSet.add(newItem);
+			}
 
-            ps.close();
-            c.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            metadataSet = null;
-        }
-        return metadataSet;
+			ps.close();
+			c.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			metadataSet = null;
+		}
+		return metadataSet;
 	}
 
 }
