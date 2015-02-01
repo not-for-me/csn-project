@@ -39,6 +39,7 @@ public class CoordinatorImpl implements Coordinator {
 
         logger.info("Importing Network Member mapping list from db ...");
         NetworkMappingMap.setMemberMappingMap(sensorNetworkManager.getMappingMapInfo());
+        logger.info("Imported Network Member mapping list {}", NetworkMappingMap.getMappingMap().toString());
         return ReturnType.Done;
     }
 

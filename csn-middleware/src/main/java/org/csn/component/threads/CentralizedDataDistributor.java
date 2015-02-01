@@ -95,10 +95,9 @@ public class CentralizedDataDistributor extends Thread implements MqttCallback {
             logger.info("Pop Sensor Data from Central Queue ...");
             sensorData = queue.poll();
 
-//            for(String memberID : NetworkMappingMap.getMappingMap().keySet()) {
-//                Set<String> topicPaths = NetworkMappingMap.getMappingMap().get(memberID);
-
             Set<String> topicPaths = NetworkMappingMap.getMappingMap().get(sensorData.getId());
+            if(topicPaths != null) {
+            	logger.info("Data ID: {} is registered in the CSN", sensorData.getId());
                 for(String topicPath : topicPaths) {
                     logger.info("Current Sensor Data is a member of {}", topicPath);
 
@@ -129,7 +128,10 @@ public class CentralizedDataDistributor extends Thread implements MqttCallback {
                         e.printStackTrace();
                     }
                 }
-//            }
+            }
+            else {
+            	logger.info("Data ID: {} is not registered in the CSN", sensorData.getId());
+            }
         }
     }
 
