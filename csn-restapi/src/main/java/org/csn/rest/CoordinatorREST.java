@@ -127,7 +127,7 @@ public class CoordinatorREST {
         if(coordinator != null)
             configuration = coordinator.getCsnConfiguration();
 
-        if(configuration == null)
+        if(this.getConfiguration() == null)
             throw new NotFoundException();
         else {
             try { logger.info("Data which is sent: {}", mapper.writeValueAsString(this.getConfiguration())); } catch (JsonProcessingException e) { e.printStackTrace(); }

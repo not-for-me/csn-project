@@ -11,10 +11,10 @@ public class SensorData {
 
     }
 
-    public SensorData(String id, String Timestamp, String Value) {
+    public SensorData(String id, String timestamp, String value) {
         this.id = id;
-        this.timestamp = Timestamp;
-        this.value = Value;
+        this.timestamp = timestamp;
+        this.value = value;
     }
 
     public String getId() {
