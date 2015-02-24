@@ -1,35 +1,37 @@
 package org.csn.db;
 
-import com.mongodb.DB;
-import com.mongodb.MongoClient;
-import org.csn.util.CSNXMLParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.net.UnknownHostException;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.mongodb.DB;
+import com.mongodb.MongoClient;
+
 public class MongoDBConnectionMaker {
-	Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(MongoDBConnectionMaker.class.getClass());
 
 	private MongoClient mongoClient;
-	private DB db;
+	private DB mongoDB;
 
 	public MongoDBConnectionMaker() {
+		Map<String, String> confMap = DBConfiguration.getDBConfMap();
+
 		try {
-			mongoClient = new MongoClient(
-					DBConfiguration.DB_CONF_MAP.get("mongo-url"),
-					Integer.parseInt(DBConfiguration.DB_CONF_MAP
-							.get("mongo-port")));
-			db = mongoClient.getDB(DBConfiguration.DB_CONF_MAP
-					.get("mongo-db-name"));
+			mongoClient = new MongoClient(confMap.get("mongo-url"),
+					Integer.parseInt(confMap.get("mongo-port")));
+
+			mongoDB = mongoClient.getDB(confMap.get("mongo-db-name"));
 		} catch (UnknownHostException e) {
-			e.printStackTrace();
+			LOGGER.error("Exception Class: " + e.getClass()
+					+ "\nException Message: " + e.getMessage());
 		}
 	}
 
 	public DB getMongoDB() {
-		return this.db;
+		return this.mongoDB;
 	}
 
 	public void closeMongo() {
