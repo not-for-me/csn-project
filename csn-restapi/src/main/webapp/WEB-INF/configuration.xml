@@ -1,13 +1,13 @@
 <csn-conf>
   <db>
-    <url>jdbc:mysql://localhost:3306/csn</url>
-    <user>root</user>
-    <password>root</password>
+    <mysql-url>jdbc:mysql://localhost:3306/csn</mysql-url>
+    <mysql-user>root</mysql-user>
+    <mysql-password>root</mysql-password>
   </db>
   <persistentDB>
-    <url>localhost</url>
-    <port>27017</port>
-    <dbName>CSN</dbName>
+    <mongo-url>localhost</mongo-url>
+    <mongo-port>27017</mongo-port>
+    <mongo-db-name>CSN</mongo-db-name>
   </persistentDB>
   <adapters>
   	<socket>
