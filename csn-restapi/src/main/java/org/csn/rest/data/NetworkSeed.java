@@ -5,9 +5,9 @@ import java.util.Set;
 
 public class NetworkSeed {
 	private String name;
-	Set<String> members;
-	Set<Map<String, String>> metadata;
-	Set<String> tags;
+	private Set<String> members;
+	private Set<Map<String, String>> metadata;
+	private Set<String> tags;
 
 	public String getName() {
 		return name;
