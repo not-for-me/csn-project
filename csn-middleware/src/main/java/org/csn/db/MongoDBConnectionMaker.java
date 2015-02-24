@@ -10,27 +10,29 @@ import java.net.UnknownHostException;
 import java.util.Map;
 
 public class MongoDBConnectionMaker {
-    Logger logger = LoggerFactory.getLogger(this.getClass());
+	Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private MongoClient mongoClient;
-    private DB db;
+	private MongoClient mongoClient;
+	private DB db;
 
-    public MongoDBConnectionMaker() {
-        String filePath =  this.getClass().getClassLoader().getResource("").getPath() + "../configuration.xml";
-        Map<String, String> connInfoMap = CSNXMLParser.getPersitentDBConnInfo(filePath);
-        try {
-            mongoClient = new MongoClient(connInfoMap.get("url"), Integer.parseInt(connInfoMap.get("port")));
-            db = mongoClient.getDB(connInfoMap.get("dbName"));
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-    }
+	public MongoDBConnectionMaker() {
+		try {
+			mongoClient = new MongoClient(
+					DBConfiguration.DB_CONF_MAP.get("mongo-url"),
+					Integer.parseInt(DBConfiguration.DB_CONF_MAP
+							.get("mongo-port")));
+			db = mongoClient.getDB(DBConfiguration.DB_CONF_MAP
+					.get("mongo-db-name"));
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+	}
 
-    public DB getMongoDB() {
-        return this.db;
-    }
+	public DB getMongoDB() {
+		return this.db;
+	}
 
-    public void closeMongo() {
-        mongoClient.close();
-    }
+	public void closeMongo() {
+		mongoClient.close();
+	}
 }

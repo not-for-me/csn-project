@@ -11,19 +11,17 @@ import java.sql.SQLException;
 import java.util.Map;
 
 public class JDBCConnectionMaker implements ConnectionMaker {
-    Logger logger = LoggerFactory.getLogger(this.getClass());
+	Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public Connection makeConnection() throws ClassNotFoundException, SQLException, IOException {
-        Class.forName("com.mysql.jdbc.Driver");
-        String filePath =  this.getClass().getClassLoader().getResource("").getPath() + "../configuration.xml";
-        Map<String, String> connInfoMap = CSNXMLParser.getDBConnInfo(filePath);
+	public Connection makeConnection() throws ClassNotFoundException,
+			SQLException, IOException {
+		Class.forName("com.mysql.jdbc.Driver");
 
-        Connection c = DriverManager.getConnection(
-                connInfoMap.get("url"),
-                connInfoMap.get("user"),
-                connInfoMap.get("password")
-        );
-        return c;
-    }
+		Connection c = DriverManager.getConnection(
+				DBConfiguration.DB_CONF_MAP.get("mysql-url"),
+				DBConfiguration.DB_CONF_MAP.get("mysql-user"),
+				DBConfiguration.DB_CONF_MAP.get("mysql-password"));
+		return c;
+	}
 
 }
