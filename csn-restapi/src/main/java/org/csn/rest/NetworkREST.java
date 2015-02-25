@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class NetworkREST {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	ObjectMapper mapper = new ObjectMapper();
+	private ObjectMapper mapper = new ObjectMapper();
 	Map<String, Object> jsonDataMap = new HashMap<String, Object>();
 	Map<String, Map<String, Object>> retJsonMap = new HashMap<String, Map<String, Object>>();
 	private SensorNetworkManager sensorNetworkManger;

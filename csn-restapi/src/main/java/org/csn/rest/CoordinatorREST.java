@@ -18,11 +18,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.csn.CSNProvider;
 import org.csn.component.Coordinator;
-import org.csn.component.impl.CoordinatorImpl;
 import org.csn.data.CSNConfiguration;
 import org.csn.rest.data.JsonKeyName;
+import org.csn.util.LogPrinter;
 import org.csn.util.TimeGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,44 +32,38 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Singleton
 @Path("/")
 public class CoordinatorREST {
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(CoordinatorREST.class.getClass());
 	private ObjectMapper mapper = new ObjectMapper();
-	private Map<String, Object> jsonDataMap = new HashMap<String, Object>();
-	private Map<String, Map<String, Object>> retJsonMap = new HashMap<String, Map<String, Object>>();
 	private Coordinator coordinator;
 	private CSNConfiguration configuration = null;
 
 	public CoordinatorREST() {
-		logger.info("CSN Service API!!!");
-		jsonDataMap.put(JsonKeyName.CATEGORY_NAME, "CSN");
-		jsonDataMap = new HashMap<String, Object>();
-		retJsonMap = new HashMap<String, Map<String, Object>>();
-	}
-
-	public CSNConfiguration getConfiguration() {
-		return configuration;
-	}
-
-	public void setConfiguration(CSNConfiguration configuration) {
-		this.configuration = configuration;
+		LOGGER.info("CSN Service API!!!");
 	}
 
 	public void setCurrentTime() {
 		this.configuration.setCreationTime(TimeGenerator.getCurrentTimestamp());
 	}
 
-	private void makeResponseData(String method) {
-		jsonDataMap.put(JsonKeyName.METHOD_NAME, method);
-		jsonDataMap.put(JsonKeyName.SCOPE_NAME, "ALL");
-		jsonDataMap.put(JsonKeyName.RESULT_NAME, "OK");
-		jsonDataMap.put(JsonKeyName.RET_DATA_NAME, this.getConfiguration());
-		retJsonMap.put(JsonKeyName.RET_KEY_NAME, jsonDataMap);
+	private Map<String, Map<String, Object>> makeConfigurationResponse(
+			String method) {
+		Map<String, Object> dataMap = new HashMap<String, Object>();
+		dataMap.put(JsonKeyName.METHOD_NAME, method);
+		dataMap.put(JsonKeyName.SCOPE_NAME, "ALL");
+		dataMap.put(JsonKeyName.RESULT_NAME, "OK");
+		dataMap.put(JsonKeyName.RET_DATA_NAME, configuration);
+
+		Map<String, Map<String, Object>> finalReturnMap = new HashMap<String, Map<String, Object>>();
+		finalReturnMap.put(JsonKeyName.RET_KEY_NAME, dataMap);
 		try {
-			logger.info("Data which is sent: {}",
-					mapper.writeValueAsString(retJsonMap));
+			LOGGER.info("Data which is sent: {}",
+					mapper.writeValueAsString(finalReturnMap));
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			LogPrinter.printErrorLog(LOGGER, e.getClass().toString(),
+					e.getMessage());
 		}
+		return finalReturnMap;
 	}
 
 	@Path("/networks")
@@ -80,7 +73,7 @@ public class CoordinatorREST {
 
 	@Path("/tags")
 	public TagREST getTagAPI() {
-		logger.info("Tag REST Call ...");
+		LOGGER.info("Tag REST Call ...");
 		return new TagREST(coordinator);
 	}
 
@@ -93,24 +86,22 @@ public class CoordinatorREST {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response setCSNConfigMetadata(@QueryParam("action") String action,
-			CSNConfiguration input) {
+			final CSNConfiguration inputConfig) {
 		if (action != null) {
-			logger.info("Input Action: {}", action);
-			if (input != null)
-				logger.info("Configuration Data: {}", input.toString());
+			LOGGER.info("Input Action: {}", action);
+			if (inputConfig != null)
+				LOGGER.info("Configuration Data: {}", inputConfig.toString());
 			switch (action) {
 			case "restart":
 				if (coordinator != null)
 					coordinator.terminateCSN();
 			case "start":
 				if (coordinator == null) {
-					this.setConfiguration(input);
+					configuration = inputConfig;
 					this.setCurrentTime();
-					
-					coordinator = CSNProvider.getCSNCoreService( input.getCsnName(), getConfiguration());
-					
-					coordinator = new CoordinatorImpl(input.getCsnName(), getConfiguration());
-					
+
+					coordinator = new Coordinator(inputConfig);
+
 					coordinator.initCSN();
 					coordinator.startCSN();
 				}
@@ -119,22 +110,23 @@ public class CoordinatorREST {
 				if (coordinator != null) {
 					coordinator.terminateCSN();
 					coordinator = null;
-					this.setConfiguration(null);
+					configuration = null;
 				}
 			}
-			this.makeResponseData("POST");
-			return Response.ok(retJsonMap, MediaType.APPLICATION_JSON).build();
+			return Response.ok(makeConfigurationResponse("POST"),
+					MediaType.APPLICATION_JSON).build();
 		} else {
-			this.setConfiguration(input);
+			configuration = inputConfig;
 			this.setCurrentTime();
 			URI createdUri = null;
 			try {
 				createdUri = new URI("http://128.199.186.224:8080/csn");
 			} catch (URISyntaxException e) {
-				e.printStackTrace();
+				LogPrinter.printErrorLog(LOGGER, e.getClass().toString(),
+						e.getMessage());
 			}
-			this.makeResponseData("POST");
-			return Response.created(createdUri).entity(retJsonMap)
+			return Response.created(createdUri)
+					.entity(makeConfigurationResponse("POST"))
 					.type(MediaType.APPLICATION_JSON).build();
 		}
 	}
@@ -142,34 +134,34 @@ public class CoordinatorREST {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getCSNConfigMetadata() {
-		logger.info("[GET] CSN Configuration");
+		LOGGER.info("[GET] CSN Configuration");
 		if (coordinator != null)
 			configuration = coordinator.getCsnConfiguration();
 
-		if (this.getConfiguration() == null)
+		if (configuration == null)
 			throw new NotFoundException();
 		else {
 			try {
-				logger.info("Data which is sent: {}",
-						mapper.writeValueAsString(this.getConfiguration()));
+				LOGGER.info("Data which is sent: {}",
+						mapper.writeValueAsString(configuration));
 			} catch (JsonProcessingException e) {
-				e.printStackTrace();
+				LogPrinter.printErrorLog(LOGGER, e.getClass().toString(),
+						e.getMessage());
 			}
-			return Response.ok(this.getConfiguration(),
-					MediaType.APPLICATION_JSON).build();
+			return Response.ok(configuration, MediaType.APPLICATION_JSON)
+					.build();
 		}
 	}
 
 	@DELETE
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response removeCSNConfigMetadata() {
-		if (coordinator != null) {
+		if (coordinator.isRunning()) {
 			coordinator.terminateCSN();
-			coordinator = null;
+			configuration = null;
 		}
-		this.makeResponseData("DELETE");
-		this.setConfiguration(null);
-		return Response.ok(retJsonMap, MediaType.APPLICATION_JSON).build();
+		return Response.ok(makeConfigurationResponse("DELETE"),
+				MediaType.APPLICATION_JSON).build();
 	}
 
 	@GET
@@ -178,16 +170,17 @@ public class CoordinatorREST {
 	public Response getCSNStatus() {
 		Map<String, Object> jsonDataMap = new HashMap<String, Object>();
 
-		if (coordinator != null && coordinator.isWorking() == true)
+		if (coordinator != null && coordinator.isRunning() == true)
 			jsonDataMap.put("working", "OK");
 		else
 			jsonDataMap.put("working", "FAIL");
 
 		try {
-			logger.info("Data which is sent: {}",
+			LOGGER.info("Data which is sent: {}",
 					mapper.writeValueAsString(jsonDataMap));
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			LogPrinter.printErrorLog(LOGGER, e.getClass().toString(),
+					e.getMessage());
 		}
 		return Response.ok(jsonDataMap, MediaType.APPLICATION_JSON).build();
 	}
@@ -213,10 +206,11 @@ public class CoordinatorREST {
 				.getMemoryUsagePercentage());
 
 		try {
-			logger.info("Data which is sent: {}",
+			LOGGER.info("Data which is sent: {}",
 					mapper.writeValueAsString(jsonDataMap));
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			LogPrinter.printErrorLog(LOGGER, e.getClass().toString(),
+					e.getMessage());
 		}
 		return Response.ok(jsonDataMap, MediaType.APPLICATION_JSON).build();
 	}
@@ -229,10 +223,11 @@ public class CoordinatorREST {
 		retMap.put("data", coordinator.getMessageQueueManager()
 				.getAllTopicStatus());
 		try {
-			logger.info("Data which is sent: {}",
+			LOGGER.info("Data which is sent: {}",
 					mapper.writeValueAsString(retMap));
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			LogPrinter.printErrorLog(LOGGER, e.getClass().toString(),
+					e.getMessage());
 		}
 		return Response.ok(retMap, MediaType.APPLICATION_JSON).build();
 	}

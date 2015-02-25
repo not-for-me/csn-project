@@ -3,6 +3,7 @@ package org.csn.db;
 import java.net.UnknownHostException;
 import java.util.Map;
 
+import org.csn.util.LogPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +26,8 @@ public class MongoDBConnectionMaker {
 
 			mongoDB = mongoClient.getDB(confMap.get("mongo-db-name"));
 		} catch (UnknownHostException e) {
-			LOGGER.error("Exception Class: " + e.getClass()
-					+ "\nException Message: " + e.getMessage());
+			LogPrinter.printErrorLog(LOGGER, e.getClass().toString(),
+					e.getMessage());
 		}
 	}
 
