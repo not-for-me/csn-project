@@ -60,14 +60,6 @@ public class SensorNetworkManagerImpl implements SensorNetworkManager {
         if(tags != null)
             tagDAO.addTag(tags, id);
         
-        
-        // Create another Single Network for the multi networks
-//        if(!isSingle){
-//            topicPath = TopicPathGenerator.getNetworkTopicPath(id, name, NetworkType.Single);
-//            members = new HashSet<>();
-//            members.add(id);
-//            _registerNetwork(id, members, topicPath);
-//        }
         return id;
     }
 
