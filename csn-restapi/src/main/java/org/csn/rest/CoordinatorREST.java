@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response;
 
 import org.csn.CSNProvider;
 import org.csn.component.Coordinator;
+import org.csn.component.impl.CoordinatorImpl;
 import org.csn.data.CSNConfiguration;
 import org.csn.rest.data.JsonKeyName;
 import org.csn.util.TimeGenerator;
@@ -74,7 +75,7 @@ public class CoordinatorREST {
 
 	@Path("/networks")
 	public NetworkREST getSensorNetworkAPI() {
-		return new NetworkREST(coordinator);
+		return new NetworkREST(coordinator.getSensorNetworkManager());
 	}
 
 	@Path("/tags")
@@ -105,8 +106,11 @@ public class CoordinatorREST {
 				if (coordinator == null) {
 					this.setConfiguration(input);
 					this.setCurrentTime();
-					coordinator = CSNProvider.getCSNCoreService(
-							input.getCsnName(), this.getConfiguration());
+					
+					coordinator = CSNProvider.getCSNCoreService( input.getCsnName(), getConfiguration());
+					
+					coordinator = new CoordinatorImpl(input.getCsnName(), getConfiguration());
+					
 					coordinator.initCSN();
 					coordinator.startCSN();
 				}

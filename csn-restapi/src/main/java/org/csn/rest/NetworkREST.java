@@ -15,18 +15,17 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.csn.component.SensorNetworkManager;
 import org.csn.data.ReturnType;
 import org.csn.data.SensorNetwork;
-import org.csn.component.Coordinator;
 import org.csn.rest.data.JsonKeyName;
 import org.csn.rest.data.NetworkSeed;
 import org.csn.rest.exception.NotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class NetworkREST {
 
@@ -34,10 +33,10 @@ public class NetworkREST {
 	ObjectMapper mapper = new ObjectMapper();
 	Map<String, Object> jsonDataMap = new HashMap<String, Object>();
 	Map<String, Map<String, Object>> retJsonMap = new HashMap<String, Map<String, Object>>();
-	private Coordinator coordinator;
+	private SensorNetworkManager sensorNetworkManger;
 
-	public NetworkREST(Coordinator coordinator) {
-		this.coordinator = coordinator;
+	public NetworkREST(SensorNetworkManager sensorNetworkManger) {
+		this.sensorNetworkManger = sensorNetworkManger;
 		jsonDataMap.put(JsonKeyName.CATEGORY_NAME, "Network");
 	}
 
@@ -49,16 +48,15 @@ public class NetworkREST {
 	public Response createNetwork(NetworkSeed input) {
 		logger.info(input.toString());
 
-		String id = coordinator.getSensorNetworkManager().registerNetwork(
-				input.getName().replaceAll("\\p{Space}", "").replace(".", "_"),
+		String id = sensorNetworkManger.registerNetwork(input.getName()
+				.replaceAll("\\p{Space}", "").replace(".", "_"),
 				input.getMembers(), input.getMetadata(), input.getTags());
 		jsonDataMap.put(JsonKeyName.METHOD_NAME, "POST");
 		jsonDataMap.put(JsonKeyName.SCOPE_NAME, "ONE");
 		jsonDataMap.put(JsonKeyName.RET_DATA_NAME, id);
 		if (id != null) {
 			jsonDataMap.put(JsonKeyName.RESULT_NAME, "OK");
-			SensorNetwork metadata = coordinator.getSensorNetworkManager()
-					.getNetwork(id);
+			SensorNetwork metadata = sensorNetworkManger.getNetwork(id);
 			jsonDataMap.put(JsonKeyName.RET_DATA_NAME, metadata);
 		} else {
 			jsonDataMap.put(JsonKeyName.RESULT_NAME, "FAIL");
@@ -85,12 +83,11 @@ public class NetworkREST {
 			logger.info("Index: {}, Num: {}", index, num);
 
 			if (num > 0)
-				networkSet = coordinator.getSensorNetworkManager()
+				networkSet = sensorNetworkManger
 						.getNetworkResources(index, num);
 
 			else
-				networkSet = coordinator.getSensorNetworkManager()
-						.getAllNetworkResources();
+				networkSet = sensorNetworkManger.getAllNetworkResources();
 
 			if (networkSet != null) {
 				Map<String, Set<SensorNetwork>> retMap = new HashMap<String, Set<SensorNetwork>>();
@@ -112,17 +109,14 @@ public class NetworkREST {
 				logger.info("Index: {}, Num: {}", index, num);
 
 				if (num > 0)
-					set = (select.equals("ids")) ? coordinator
-							.getSensorNetworkManager()
-							.getNetworkIDs(index, num) : coordinator
-							.getSensorNetworkManager().getNetworkTopicPaths(
-									index, num);
+					set = (select.equals("ids")) ? sensorNetworkManger
+							.getNetworkIDs(index, num) : sensorNetworkManger
+							.getNetworkTopicPaths(index, num);
 
 				else
-					set = (select.equals("ids")) ? coordinator
-							.getSensorNetworkManager().getAllNetworkIDs()
-							: coordinator.getSensorNetworkManager()
-									.getAllNetworkTopicPaths();
+					set = (select.equals("ids")) ? sensorNetworkManger
+							.getAllNetworkIDs() : sensorNetworkManger
+							.getAllNetworkTopicPaths();
 
 				if (set != null) {
 					Map<String, Set<String>> retMap = new HashMap<String, Set<String>>();
@@ -138,8 +132,8 @@ public class NetworkREST {
 				}
 			case "members":
 				logger.info("Network Members API");
-				Map<String, Set<String>> membersMap = coordinator
-						.getSensorNetworkManager().getAllNetworkAndMemberIDs();
+				Map<String, Set<String>> membersMap = sensorNetworkManger
+						.getAllNetworkAndMemberIDs();
 				if (membersMap != null) {
 					try {
 						logger.info("Data which is sent: {}",
@@ -152,13 +146,12 @@ public class NetworkREST {
 				}
 			case "counts":
 				logger.info("Network Count API");
-				int totalNetworkCNT = coordinator.getSensorNetworkManager()
-						.getAllNetworkCount();
-				int operatingNetworkCNT = coordinator.getSensorNetworkManager()
+				int totalNetworkCNT = sensorNetworkManger.getAllNetworkCount();
+				int operatingNetworkCNT = sensorNetworkManger
 						.getOperatingNetworkCount();
-				int stoppedNetworkCNT = coordinator.getSensorNetworkManager()
+				int stoppedNetworkCNT = sensorNetworkManger
 						.getStoppedNetworkCount();
-				int faultedNetworkCNT = coordinator.getSensorNetworkManager()
+				int faultedNetworkCNT = sensorNetworkManger
 						.getFaultedNetworkCount();
 
 				if (totalNetworkCNT > -1) {
@@ -196,8 +189,7 @@ public class NetworkREST {
 	@DELETE
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response removeAllNetwork() {
-		ReturnType retType = coordinator.getSensorNetworkManager()
-				.deactivateAllNetworks();
+		ReturnType retType = sensorNetworkManger.deactivateAllNetworks();
 		jsonDataMap.put(JsonKeyName.METHOD_NAME, "DELETE");
 		jsonDataMap.put(JsonKeyName.SCOPE_NAME, "ALL");
 
@@ -222,8 +214,7 @@ public class NetworkREST {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getNetwork(@PathParam("id") String id) {
 		logger.info("Input  Network ID: {}", id);
-		SensorNetwork network = coordinator.getSensorNetworkManager()
-				.getNetwork(id);
+		SensorNetwork network = sensorNetworkManger.getNetwork(id);
 		if (network != null) {
 			try {
 				logger.info("Data which is sent: {}",
@@ -241,12 +232,10 @@ public class NetworkREST {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response removeNetwork(@PathParam("id") String id) {
 		logger.info("Input  Network ID: {}", id);
-		SensorNetwork network = coordinator.getSensorNetworkManager()
-				.getNetwork(id);
+		SensorNetwork network = sensorNetworkManger.getNetwork(id);
 		jsonDataMap.put(JsonKeyName.RET_DATA_NAME, network);
 
-		ReturnType retType = coordinator.getSensorNetworkManager()
-				.removeNetwork(id);
+		ReturnType retType = sensorNetworkManger.removeNetwork(id);
 		jsonDataMap.put(JsonKeyName.METHOD_NAME, "DELETE");
 		jsonDataMap.put(JsonKeyName.SCOPE_NAME, "ALL");
 
@@ -275,11 +264,10 @@ public class NetworkREST {
 
 		if (select == null) {
 			logger.info("Get Parent Network IDs");
-			set = coordinator.getSensorNetworkManager().getParentNetworks(id);
+			set = sensorNetworkManger.getParentNetworks(id);
 		} else {
 			logger.info("Get Parent Network Topic Paths");
-			set = coordinator.getSensorNetworkManager()
-					.getParentNetworkTopicPaths(id);
+			set = sensorNetworkManger.getParentNetworkTopicPaths(id);
 		}
 
 		if (set != null) {
@@ -299,8 +287,7 @@ public class NetworkREST {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getMemberIDs(@PathParam("id") String id) {
 		logger.info("Input  Network ID: {}", id);
-		Set<String> memberSet = coordinator.getSensorNetworkManager()
-				.getMemberIDs(id);
+		Set<String> memberSet = sensorNetworkManger.getMemberIDs(id);
 		if (memberSet != null) {
 			try {
 				logger.info("Data which is sent: {}",
@@ -318,8 +305,7 @@ public class NetworkREST {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getTopicPath(@PathParam("id") String id) {
 		logger.info("Input  Network ID: {}", id);
-		String topicName = coordinator.getSensorNetworkManager().getTopicPath(
-				id);
+		String topicName = sensorNetworkManger.getTopicPath(id);
 		if (topicName != null) {
 			String input = "{\"topic_name\":\"" + topicName + "\"}";
 			logger.info("Data which is sent: {}", input);
@@ -328,241 +314,6 @@ public class NetworkREST {
 			throw new NotFoundException();
 	}
 
-	//
-	// @POST
-	// @Path("/{id}/opts")
-	// @Consumes(MediaType.APPLICATION_JSON)
-	// @Produces(MediaType.APPLICATION_JSON)
-	// public Response setNetworkOptional(Map<String, String> input,
-	// @PathParam("id") String id) {
-	// logger.info(input.toString());
-	// logger.info("Input  Network ID: {}", id );
-	// DAOReturnType retType =
-	// coordinator.getSensorNetworkManager().addOptionalNetwork(id, input);
-	//
-	// jsonDataMap.put(JsonKeyName.METHOD_NAME,"POST");
-	// jsonDataMap.put(JsonKeyName.SCOPE_NAME,"ONE");
-	//
-	// if(retType != DAOReturnType.RETURN_ERROR) {
-	// jsonDataMap.put(JsonKeyName.RESULT_NAME, "OK");
-	// Network metadata = coordinator.getSensorNetworkManager().getNetwork(id);
-	// jsonDataMap.put(JsonKeyName.RET_DATA_NAME, metadata);
-	// }
-	// else {
-	// jsonDataMap.put(JsonKeyName.RESULT_NAME, "FAIL");
-	// jsonDataMap.put(JsonKeyName.RET_DATA_NAME, null);
-	// }
-	//
-	// retJsonMap.put(JsonKeyName.RET_KEY_NAME, jsonDataMap);
-	// try { logger.info("Data which is sent: {}",
-	// mapper.writeValueAsString(retJsonMap)); } catch (JsonProcessingException
-	// e) { e.printStackTrace(); }
-	// return Response.ok(retJsonMap, MediaType.APPLICATION_JSON)
-	// .header("Access-Control-Allow-Origin", "*")
-	// .header("Access-Control-Allow-Methods",
-	// "POST, GET, PUT, UPDATE, OPTIONS")
-	// .header("Access-Control-Allow-Headers",
-	// "Content-Type, Accept, X-Requested-With")
-	// .build();
-	// }
-	//
-	// @GET
-	// @Path("/{id}/opts")
-	// @Produces(MediaType.APPLICATION_JSON)
-	// public Response getNetworkOptaional(@PathParam("id") String id) {
-	// logger.info("Input  ID: {}", id );
-	// Map<String, String> optMap =
-	// coordinator.getSensorNetworkManager().getAllOptionalNetwork(id);
-	// if(optMap != null) {
-	// try { logger.info("Data which is sent: {}",
-	// mapper.writeValueAsString(optMap)); } catch (JsonProcessingException e) {
-	// e.printStackTrace(); }
-	// return Response.ok(optMap, MediaType.APPLICATION_JSON)
-	// .header("Access-Control-Allow-Origin", "*")
-	// .header("Access-Control-Allow-Methods",
-	// "POST, GET, PUT, UPDATE, OPTIONS")
-	// .header("Access-Control-Allow-Headers",
-	// "Content-Type, Accept, X-Requested-With")
-	// .build();
-	// }
-	// else
-	// throw new NotFoundException();
-	// }
-	//
-	// @PUT
-	// @Path("/{id}/opts")
-	// @Consumes(MediaType.APPLICATION_JSON)
-	// @Produces(MediaType.APPLICATION_JSON)
-	// public Response updateNetworkOptional(Map<String, String> input,
-	// @PathParam("id") String id) {
-	// logger.info(input.toString());
-	// logger.info("Input  ID: {}", id );
-	// DAOReturnType retType =
-	// coordinator.getSensorNetworkManager().updateOptionalNetwork(id, input);
-	// jsonDataMap.put(JsonKeyName.METHOD_NAME,"PUT");
-	// jsonDataMap.put(JsonKeyName.SCOPE_NAME,"ONE");
-	//
-	//
-	// if(retType != DAOReturnType.RETURN_ERROR) {
-	// jsonDataMap.put(JsonKeyName.RESULT_NAME, "OK");
-	// Network metadata = coordinator.getSensorNetworkManager().getNetwork(id);
-	// jsonDataMap.put(JsonKeyName.RET_DATA_NAME, metadata);
-	// }
-	// else {
-	// jsonDataMap.put(JsonKeyName.RESULT_NAME, "FAIL");
-	// jsonDataMap.put(JsonKeyName.RET_DATA_NAME, null);
-	// }
-	//
-	// retJsonMap.put(JsonKeyName.RET_KEY_NAME, jsonDataMap);
-	// try { logger.info("Data which is sent: {}",
-	// mapper.writeValueAsString(retJsonMap)); } catch (JsonProcessingException
-	// e) { e.printStackTrace(); }
-	// return Response.ok(retJsonMap, MediaType.APPLICATION_JSON)
-	// .header("Access-Control-Allow-Origin", "*")
-	// .header("Access-Control-Allow-Methods",
-	// "POST, GET, PUT, UPDATE, OPTIONS")
-	// .header("Access-Control-Allow-Headers",
-	// "Content-Type, Accept, X-Requested-With")
-	// .build();
-	// }
-	//
-	// @DELETE
-	// @Path("/{id}/opts")
-	// @Produces(MediaType.APPLICATION_JSON)
-	// public Response removeNetworkAllOptional(@PathParam("id") String id) {
-	// logger.info("Input  Network ID: {}", id );
-	// DAOReturnType retType =
-	// coordinator.getSensorNetworkManager().removeOptionalNetwork(id);
-	// jsonDataMap.put(JsonKeyName.METHOD_NAME,"DELETE");
-	// jsonDataMap.put(JsonKeyName.SCOPE_NAME,"ALL");
-	//
-	// if(retType != DAOReturnType.RETURN_ERROR) {
-	// jsonDataMap.put(JsonKeyName.RESULT_NAME, "OK");
-	// Network metadata = coordinator.getSensorNetworkManager().getNetwork(id);
-	// jsonDataMap.put(JsonKeyName.RET_DATA_NAME, metadata);
-	// }
-	// else {
-	// jsonDataMap.put(JsonKeyName.RESULT_NAME, "FAIL");
-	// jsonDataMap.put(JsonKeyName.RET_DATA_NAME, null);
-	// }
-	//
-	// retJsonMap.put(JsonKeyName.RET_KEY_NAME, jsonDataMap);
-	// try { logger.info("Data which is sent: {}",
-	// mapper.writeValueAsString(retJsonMap)); } catch (JsonProcessingException
-	// e) { e.printStackTrace(); }
-	// return Response.ok(retJsonMap, MediaType.APPLICATION_JSON)
-	// .header("Access-Control-Allow-Origin", "*")
-	// .header("Access-Control-Allow-Methods",
-	// "POST, GET, PUT, UPDATE, OPTIONS")
-	// .header("Access-Control-Allow-Headers",
-	// "Content-Type, Accept, X-Requested-With")
-	// .build();
-	// }
-	//
-	//
-	// @GET
-	// @Path("/{id}/opts/{opt_name}")
-	// @Produces(MediaType.APPLICATION_JSON)
-	// public Response getNetworkOptaionalValue(@PathParam("id") String id,
-	// @PathParam("opt_name") String opt_name) {
-	// logger.info("Input  ID: {}", id );
-	// logger.info("Input Option Name: {}", opt_name);
-	// String opt_val =
-	// coordinator.getSensorNetworkManager().getOptionalNetworkValue(id,
-	// opt_name);
-	// if(opt_val != null) {
-	// Map<String, String> optMap = new HashMap<String, String>();
-	// optMap.put(opt_name, opt_val);
-	// try { logger.info("Data which is sent: {}",
-	// mapper.writeValueAsString(optMap)); } catch (JsonProcessingException e) {
-	// e.printStackTrace(); }
-	// return Response.ok(optMap, MediaType.APPLICATION_JSON)
-	// .header("Access-Control-Allow-Origin", "*")
-	// .header("Access-Control-Allow-Methods",
-	// "POST, GET, PUT, UPDATE, OPTIONS")
-	// .header("Access-Control-Allow-Headers",
-	// "Content-Type, Accept, X-Requested-With")
-	// .build();
-	// }
-	// else
-	// throw new NotFoundException();
-	// }
-	//
-	// @PUT
-	// @Path("/{id}/opts/{opt_name}")
-	// @Consumes(MediaType.APPLICATION_JSON)
-	// @Produces(MediaType.APPLICATION_JSON)
-	// public Response updateNetworkOptionalValue(Map<String, String> input,
-	// @PathParam("id") String id, @PathParam("opt_name") String opt_name) {
-	// logger.info(input.toString());
-	// logger.info("Input  Network ID: {}", id );
-	// logger.info("Input Option Name: {}", opt_name);
-	// DAOReturnType retType =
-	// coordinator.getSensorNetworkManager().updateOptionalNetwork(id, input);
-	// jsonDataMap.put(JsonKeyName.METHOD_NAME,"PUT");
-	// jsonDataMap.put(JsonKeyName.SCOPE_NAME,"ONE");
-	//
-	// if(retType != DAOReturnType.RETURN_ERROR) {
-	// jsonDataMap.put(JsonKeyName.RESULT_NAME, "OK");
-	// Network metadata = coordinator.getSensorNetworkManager().getNetwork(id);
-	// jsonDataMap.put(JsonKeyName.RET_DATA_NAME, metadata);
-	// }
-	// else {
-	// jsonDataMap.put(JsonKeyName.RESULT_NAME, "FAIL");
-	// jsonDataMap.put(JsonKeyName.RET_DATA_NAME, null);
-	// }
-	//
-	// retJsonMap.put(JsonKeyName.RET_KEY_NAME, jsonDataMap);
-	// try { logger.info("Data which is sent: {}",
-	// mapper.writeValueAsString(retJsonMap)); } catch (JsonProcessingException
-	// e) { e.printStackTrace(); }
-	// return Response.ok(retJsonMap, MediaType.APPLICATION_JSON)
-	// .header("Access-Control-Allow-Origin", "*")
-	// .header("Access-Control-Allow-Methods",
-	// "POST, GET, PUT, UPDATE, OPTIONS")
-	// .header("Access-Control-Allow-Headers",
-	// "Content-Type, Accept, X-Requested-With")
-	// .build();
-	// }
-	//
-	// @DELETE
-	// @Path("/{id}/opts/{opt_name}")
-	// @Produces(MediaType.APPLICATION_JSON)
-	// public Response removeNetworkOptionalValue(@PathParam("id") String id,
-	// @PathParam("opt_name") String opt_name) {
-	// logger.info("Input  Network ID: {}", id );
-	// logger.info("Input Option Name: {}", opt_name);
-	// DAOReturnType retType =
-	// coordinator.getSensorNetworkManager().removeOptionalNetworkValue(id,
-	// opt_name);
-	//
-	// jsonDataMap.put(JsonKeyName.METHOD_NAME,"DELETE");
-	// jsonDataMap.put(JsonKeyName.SCOPE_NAME,"ONE");
-	//
-	// if(retType != DAOReturnType.RETURN_ERROR) {
-	// jsonDataMap.put(JsonKeyName.RESULT_NAME, "OK");
-	// Network metadata = coordinator.getSensorNetworkManager().getNetwork(id);
-	// jsonDataMap.put(JsonKeyName.RET_DATA_NAME, metadata);
-	// }
-	// else {
-	// jsonDataMap.put(JsonKeyName.RESULT_NAME, "FAIL");
-	// jsonDataMap.put(JsonKeyName.RET_DATA_NAME, null);
-	// }
-	//
-	// retJsonMap.put(JsonKeyName.RET_KEY_NAME, jsonDataMap);
-	// try { logger.info("Data which is sent: {}",
-	// mapper.writeValueAsString(retJsonMap)); } catch (JsonProcessingException
-	// e) { e.printStackTrace(); }
-	// return Response.ok(retJsonMap, MediaType.APPLICATION_JSON)
-	// .header("Access-Control-Allow-Origin", "*")
-	// .header("Access-Control-Allow-Methods",
-	// "POST, GET, PUT, UPDATE, OPTIONS")
-	// .header("Access-Control-Allow-Headers",
-	// "Content-Type, Accept, X-Requested-With")
-	// .build();
-	// }
-	//
-
 	@POST
 	@Path("/{id}/tags")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -570,16 +321,14 @@ public class NetworkREST {
 	public Response addConcepts(Set<String> input, @PathParam("id") String id) {
 		logger.info(input.toString());
 		logger.info("Input  Network ID: {}", id);
-		ReturnType retType = coordinator.getSensorNetworkManager().addTags(
-				input, id);
+		ReturnType retType = sensorNetworkManger.addTags(input, id);
 
 		jsonDataMap.put(JsonKeyName.METHOD_NAME, "POST");
 		jsonDataMap.put(JsonKeyName.SCOPE_NAME, "ONE");
 
 		if (retType == ReturnType.Done) {
 			jsonDataMap.put(JsonKeyName.RESULT_NAME, "OK");
-			SensorNetwork network = coordinator.getSensorNetworkManager()
-					.getNetwork(id);
+			SensorNetwork network = sensorNetworkManger.getNetwork(id);
 			jsonDataMap.put(JsonKeyName.RET_DATA_NAME, network);
 		} else {
 			jsonDataMap.put(JsonKeyName.RESULT_NAME, "FAIL");
@@ -601,8 +350,7 @@ public class NetworkREST {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAllConcepts(@PathParam("id") String id) {
 		logger.info("Input  Network ID: {}", id);
-		Set<String> tagSet = coordinator.getSensorNetworkManager().getAllTags(
-				id);
+		Set<String> tagSet = sensorNetworkManger.getAllTags(id);
 		if (tagSet != null) {
 			try {
 				logger.info("Data which is sent: {}",
@@ -620,15 +368,13 @@ public class NetworkREST {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response removeNetworkAllTag(@PathParam("id") String id) {
 		logger.info("Input  Network ID: {}", id);
-		ReturnType retType = coordinator.getSensorNetworkManager()
-				.removeAllTags(id);
+		ReturnType retType = sensorNetworkManger.removeAllTags(id);
 		jsonDataMap.put(JsonKeyName.METHOD_NAME, "DELETE");
 		jsonDataMap.put(JsonKeyName.SCOPE_NAME, "ONE");
 
 		if (retType == ReturnType.Done) {
 			jsonDataMap.put(JsonKeyName.RESULT_NAME, "OK");
-			SensorNetwork network = coordinator.getSensorNetworkManager()
-					.getNetwork(id);
+			SensorNetwork network = sensorNetworkManger.getNetwork(id);
 			jsonDataMap.put(JsonKeyName.RET_DATA_NAME, network);
 		} else {
 			jsonDataMap.put(JsonKeyName.RESULT_NAME, "FAIL");
@@ -653,16 +399,14 @@ public class NetworkREST {
 		logger.info("Input  Network ID: {}", id);
 		logger.info("Input tag: {}", tag);
 
-		ReturnType retType = coordinator.getSensorNetworkManager().removeTag(
-				tag, id);
+		ReturnType retType = sensorNetworkManger.removeTag(tag, id);
 
 		jsonDataMap.put(JsonKeyName.METHOD_NAME, "DELETE");
 		jsonDataMap.put(JsonKeyName.SCOPE_NAME, "ONE");
 
 		if (retType == ReturnType.Done) {
 			jsonDataMap.put(JsonKeyName.RESULT_NAME, "OK");
-			SensorNetwork network = coordinator.getSensorNetworkManager()
-					.getNetwork(id);
+			SensorNetwork network = sensorNetworkManger.getNetwork(id);
 			jsonDataMap.put(JsonKeyName.RET_DATA_NAME, network);
 		} else {
 			jsonDataMap.put(JsonKeyName.RESULT_NAME, "FAIL");
