@@ -21,6 +21,7 @@ import org.csn.data.SensorNetwork;
 import org.csn.rest.data.JsonKeyName;
 import org.csn.rest.data.NetworkSeed;
 import org.csn.rest.exception.NotFoundException;
+import org.csn.util.LogPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,8 +29,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class NetworkREST {
-
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static final Logger LOGGER = LoggerFactory.getLogger(NetworkREST.class.getClass());
 	private ObjectMapper mapper = new ObjectMapper();
 	Map<String, Object> jsonDataMap = new HashMap<String, Object>();
 	Map<String, Map<String, Object>> retJsonMap = new HashMap<String, Map<String, Object>>();
@@ -46,7 +46,7 @@ public class NetworkREST {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createNetwork(NetworkSeed input) {
-		logger.info(input.toString());
+		LOGGER.info(input.toString());
 
 		String id = sensorNetworkManger.registerNetwork(input.getName()
 				.replaceAll("\\p{Space}", "").replace(".", "_"),
@@ -65,10 +65,11 @@ public class NetworkREST {
 
 		retJsonMap.put(JsonKeyName.RET_KEY_NAME, jsonDataMap);
 		try {
-			logger.info("Data which is sent: {}",
+			LOGGER.info("Data which is sent: {}",
 					mapper.writeValueAsString(retJsonMap));
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			LogPrinter.printErrorLog(LOGGER, e.getClass().toString(),
+					e.getMessage());
 		}
 		return Response.ok(retJsonMap, MediaType.APPLICATION_JSON).build();
 	}
@@ -78,9 +79,9 @@ public class NetworkREST {
 	public Response getNetworkInfo(@QueryParam("select") String select,
 			@QueryParam("index") int index, @QueryParam("num") int num) {
 		if (select == null) {
-			logger.info("Get All Network Data");
+			LOGGER.info("Get All Network Data");
 			Set<SensorNetwork> networkSet = null;
-			logger.info("Index: {}, Num: {}", index, num);
+			LOGGER.info("Index: {}, Num: {}", index, num);
 
 			if (num > 0)
 				networkSet = sensorNetworkManger
@@ -93,20 +94,21 @@ public class NetworkREST {
 				Map<String, Set<SensorNetwork>> retMap = new HashMap<String, Set<SensorNetwork>>();
 				retMap.put("networks", networkSet);
 				try {
-					logger.info("Data which is sent: {}",
+					LOGGER.info("Data which is sent: {}",
 							mapper.writeValueAsString(retMap));
 				} catch (JsonProcessingException e) {
-					e.printStackTrace();
+					LogPrinter.printErrorLog(LOGGER, e.getClass().toString(),
+							e.getMessage());
 				}
 				return Response.ok(retMap, MediaType.APPLICATION_JSON).build();
 			}
 		} else {
-			logger.info("Network Data Selection: {} ", select);
+			LOGGER.info("Network Data Selection: {} ", select);
 			switch (select) {
 			case "ids":
 			case "topics":
 				Set<String> set = null;
-				logger.info("Index: {}, Num: {}", index, num);
+				LOGGER.info("Index: {}, Num: {}", index, num);
 
 				if (num > 0)
 					set = (select.equals("ids")) ? sensorNetworkManger
@@ -122,30 +124,32 @@ public class NetworkREST {
 					Map<String, Set<String>> retMap = new HashMap<String, Set<String>>();
 					retMap.put("ids", set);
 					try {
-						logger.info("Data which is sent: {}",
+						LOGGER.info("Data which is sent: {}",
 								mapper.writeValueAsString(retMap));
 					} catch (JsonProcessingException e) {
-						e.printStackTrace();
+						LogPrinter.printErrorLog(LOGGER, e.getClass().toString(),
+								e.getMessage());
 					}
 					return Response.ok(retMap, MediaType.APPLICATION_JSON)
 							.build();
 				}
 			case "members":
-				logger.info("Network Members API");
+				LOGGER.info("Network Members API");
 				Map<String, Set<String>> membersMap = sensorNetworkManger
 						.getAllNetworkAndMemberIDs();
 				if (membersMap != null) {
 					try {
-						logger.info("Data which is sent: {}",
+						LOGGER.info("Data which is sent: {}",
 								mapper.writeValueAsString(membersMap));
 					} catch (JsonProcessingException e) {
-						e.printStackTrace();
+						LogPrinter.printErrorLog(LOGGER, e.getClass().toString(),
+								e.getMessage());
 					}
 					return Response.ok(membersMap, MediaType.APPLICATION_JSON)
 							.build();
 				}
 			case "counts":
-				logger.info("Network Count API");
+				LOGGER.info("Network Count API");
 				int totalNetworkCNT = sensorNetworkManger.getAllNetworkCount();
 				int operatingNetworkCNT = sensorNetworkManger
 						.getOperatingNetworkCount();
@@ -161,10 +165,11 @@ public class NetworkREST {
 					dataMap.put("stoppedCNT", stoppedNetworkCNT);
 					dataMap.put("faultedCNT", faultedNetworkCNT);
 					try {
-						logger.info("Data which is sent: {}",
+						LOGGER.info("Data which is sent: {}",
 								mapper.writeValueAsString(dataMap));
 					} catch (JsonProcessingException e) {
-						e.printStackTrace();
+						LogPrinter.printErrorLog(LOGGER, e.getClass().toString(),
+								e.getMessage());
 					}
 					return Response.ok(dataMap, MediaType.APPLICATION_JSON)
 							.build();
@@ -178,7 +183,7 @@ public class NetworkREST {
 		jsonDataMap.put(JsonKeyName.RET_DATA_NAME, null);
 		jsonDataMap.put(JsonKeyName.RESULT_NAME, "FAIL");
 		try {
-			logger.info("Data which is sent: {}",
+			LOGGER.info("Data which is sent: {}",
 					mapper.writeValueAsString(retJsonMap));
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
@@ -201,7 +206,7 @@ public class NetworkREST {
 		jsonDataMap.put(JsonKeyName.RET_DATA_NAME, null);
 		retJsonMap.put(JsonKeyName.RET_KEY_NAME, jsonDataMap);
 		try {
-			logger.info("Data which is sent: {}",
+			LOGGER.info("Data which is sent: {}",
 					mapper.writeValueAsString(retJsonMap));
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
@@ -213,11 +218,11 @@ public class NetworkREST {
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getNetwork(@PathParam("id") String id) {
-		logger.info("Input  Network ID: {}", id);
+		LOGGER.info("Input  Network ID: {}", id);
 		SensorNetwork network = sensorNetworkManger.getNetwork(id);
 		if (network != null) {
 			try {
-				logger.info("Data which is sent: {}",
+				LOGGER.info("Data which is sent: {}",
 						mapper.writeValueAsString(network));
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
@@ -231,7 +236,7 @@ public class NetworkREST {
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response removeNetwork(@PathParam("id") String id) {
-		logger.info("Input  Network ID: {}", id);
+		LOGGER.info("Input  Network ID: {}", id);
 		SensorNetwork network = sensorNetworkManger.getNetwork(id);
 		jsonDataMap.put(JsonKeyName.RET_DATA_NAME, network);
 
@@ -246,7 +251,7 @@ public class NetworkREST {
 
 		retJsonMap.put(JsonKeyName.RET_KEY_NAME, jsonDataMap);
 		try {
-			logger.info("Data which is sent: {}",
+			LOGGER.info("Data which is sent: {}",
 					mapper.writeValueAsString(retJsonMap));
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
@@ -259,20 +264,20 @@ public class NetworkREST {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getParents(@PathParam("id") String id,
 			@QueryParam("select") String select) {
-		logger.info("Input Network ID: {}", id);
+		LOGGER.info("Input Network ID: {}", id);
 		Set set = null;
 
 		if (select == null) {
-			logger.info("Get Parent Network IDs");
+			LOGGER.info("Get Parent Network IDs");
 			set = sensorNetworkManger.getParentNetworks(id);
 		} else {
-			logger.info("Get Parent Network Topic Paths");
+			LOGGER.info("Get Parent Network Topic Paths");
 			set = sensorNetworkManger.getParentNetworkTopicPaths(id);
 		}
 
 		if (set != null) {
 			try {
-				logger.info("Data which is sent: {}",
+				LOGGER.info("Data which is sent: {}",
 						mapper.writeValueAsString(set));
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
@@ -286,11 +291,11 @@ public class NetworkREST {
 	@Path("/{id}/members")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getMemberIDs(@PathParam("id") String id) {
-		logger.info("Input  Network ID: {}", id);
+		LOGGER.info("Input  Network ID: {}", id);
 		Set<String> memberSet = sensorNetworkManger.getMemberIDs(id);
 		if (memberSet != null) {
 			try {
-				logger.info("Data which is sent: {}",
+				LOGGER.info("Data which is sent: {}",
 						mapper.writeValueAsString(memberSet));
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
@@ -304,11 +309,11 @@ public class NetworkREST {
 	@Path("/{id}/topic")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getTopicPath(@PathParam("id") String id) {
-		logger.info("Input  Network ID: {}", id);
+		LOGGER.info("Input  Network ID: {}", id);
 		String topicName = sensorNetworkManger.getTopicPath(id);
 		if (topicName != null) {
 			String input = "{\"topic_name\":\"" + topicName + "\"}";
-			logger.info("Data which is sent: {}", input);
+			LOGGER.info("Data which is sent: {}", input);
 			return Response.ok(input, MediaType.APPLICATION_JSON).build();
 		} else
 			throw new NotFoundException();
@@ -319,8 +324,8 @@ public class NetworkREST {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response addConcepts(Set<String> input, @PathParam("id") String id) {
-		logger.info(input.toString());
-		logger.info("Input  Network ID: {}", id);
+		LOGGER.info(input.toString());
+		LOGGER.info("Input  Network ID: {}", id);
 		ReturnType retType = sensorNetworkManger.addTags(input, id);
 
 		jsonDataMap.put(JsonKeyName.METHOD_NAME, "POST");
@@ -337,7 +342,7 @@ public class NetworkREST {
 
 		retJsonMap.put(JsonKeyName.RET_KEY_NAME, jsonDataMap);
 		try {
-			logger.info("Data which is sent: {}",
+			LOGGER.info("Data which is sent: {}",
 					mapper.writeValueAsString(retJsonMap));
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
@@ -349,11 +354,11 @@ public class NetworkREST {
 	@Path("/{id}/tags")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAllConcepts(@PathParam("id") String id) {
-		logger.info("Input  Network ID: {}", id);
+		LOGGER.info("Input  Network ID: {}", id);
 		Set<String> tagSet = sensorNetworkManger.getAllTags(id);
 		if (tagSet != null) {
 			try {
-				logger.info("Data which is sent: {}",
+				LOGGER.info("Data which is sent: {}",
 						mapper.writeValueAsString(tagSet));
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
@@ -367,7 +372,7 @@ public class NetworkREST {
 	@Path("/{id}/tags")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response removeNetworkAllTag(@PathParam("id") String id) {
-		logger.info("Input  Network ID: {}", id);
+		LOGGER.info("Input  Network ID: {}", id);
 		ReturnType retType = sensorNetworkManger.removeAllTags(id);
 		jsonDataMap.put(JsonKeyName.METHOD_NAME, "DELETE");
 		jsonDataMap.put(JsonKeyName.SCOPE_NAME, "ONE");
@@ -383,7 +388,7 @@ public class NetworkREST {
 
 		retJsonMap.put(JsonKeyName.RET_KEY_NAME, jsonDataMap);
 		try {
-			logger.info("Data which is sent: {}",
+			LOGGER.info("Data which is sent: {}",
 					mapper.writeValueAsString(retJsonMap));
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
@@ -396,8 +401,8 @@ public class NetworkREST {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response removeNetworkTag(@PathParam("id") String id,
 			@PathParam("tag") String tag) {
-		logger.info("Input  Network ID: {}", id);
-		logger.info("Input tag: {}", tag);
+		LOGGER.info("Input  Network ID: {}", id);
+		LOGGER.info("Input tag: {}", tag);
 
 		ReturnType retType = sensorNetworkManger.removeTag(tag, id);
 
@@ -415,10 +420,11 @@ public class NetworkREST {
 
 		retJsonMap.put(JsonKeyName.RET_KEY_NAME, jsonDataMap);
 		try {
-			logger.info("Data which is sent: {}",
+			LOGGER.info("Data which is sent: {}",
 					mapper.writeValueAsString(retJsonMap));
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			LogPrinter.printErrorLog(LOGGER, e.getClass().toString(),
+					e.getMessage());
 		}
 		return Response.ok(retJsonMap, MediaType.APPLICATION_JSON).build();
 	}
