@@ -26,7 +26,7 @@ public class Coordinator {
 	private SensorNetworkManager sensorNetworkMgr;
 	private DataManager dataManager;
 	private MessageQueueManager mqManager;
-	private boolean working = false;
+	private boolean runningStatus = false;
 
 	public Coordinator(String csnName) {
 		configuration = new CSNConfiguration(csnName);
@@ -93,7 +93,7 @@ public class Coordinator {
 
 		LOGGER.info("Starting Data Manager ...");
 		dataManager.startDataManager();
-		working = true;
+		runningStatus = true;
 		return ReturnType.Done;
 	}
 
@@ -128,7 +128,7 @@ public class Coordinator {
 			LogPrinter.printErrorLog(LOGGER, e.getClass().toString(),
 					e.getMessage());
 		}
-		working = false;
+		runningStatus = false;
 		return ReturnType.Done;
 	}
 
@@ -137,8 +137,8 @@ public class Coordinator {
 	 *
 	 * @return If successfully working, it returns true, or false.
 	 */
-	public boolean isWorking() {
-		return working;
+	public boolean isRunning() {
+		return runningStatus;
 	}
 
 	/**
