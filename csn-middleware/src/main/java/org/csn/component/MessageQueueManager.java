@@ -1,10 +1,9 @@
 package org.csn.component;
 
-import org.csn.data.MessageQueue;
-import org.csn.data.ReturnType;
-
 import java.util.Map;
 import java.util.Set;
+
+import org.csn.data.ReturnType;
 
 public interface MessageQueueManager {
 
