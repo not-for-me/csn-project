@@ -123,19 +123,4 @@ public class TagREST {
         try { logger.info("Data which is sent: {}", mapper.writeValueAsString(retJsonMap)); } catch (JsonProcessingException e) { e.printStackTrace(); }
         return Response.ok(retJsonMap, MediaType.APPLICATION_JSON).build();
     }
-
-//    @DELETE
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Response deleteTag(TagObject tag) {
-//        logger.info(tag.toString());
-//        logger.info("Input Tag: {}", tag );
-//        Set<String> tagSet = coordinator.getSensorNetworkManager().re
-//        if(tagSet != null) {
-//            try { logger.info("Data which is sent: {}", mapper.writeValueAsString(tagSet)); } catch (JsonProcessingException e) { e.printStackTrace(); }
-//            return Response.ok(tagSet, MediaType.APPLICATION_JSON).build();
-//        }
-//        else
-//            throw new cir.lab.exception.NotFoundException();
-//    }
-
 }
