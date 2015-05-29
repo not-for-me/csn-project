@@ -29,9 +29,9 @@ public class CSNXMLParser {
 		try {
 			Element dbNode = getXMLData(filePath, "db");
 			retMap = new HashMap<>();
-			retMap.put("url", dbNode.getChildText("mysql-url"));
-			retMap.put("user", dbNode.getChildText("mysql-user"));
-			retMap.put("password", dbNode.getChildText("mysql-password"));
+			retMap.put("mysql-url", dbNode.getChildText("mysql-url"));
+			retMap.put("mysql-user", dbNode.getChildText("mysql-user"));
+			retMap.put("mysql-password", dbNode.getChildText("mysql-password"));
 		} catch (JDOMException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -45,9 +45,9 @@ public class CSNXMLParser {
 		try {
 			Element dbNode = getXMLData(filePath, "persistentDB");
 			retMap = new HashMap<>();
-			retMap.put("url", dbNode.getChildText("mongo-url"));
-			retMap.put("port", dbNode.getChildText("mongo-port"));
-			retMap.put("dbName", dbNode.getChildText("mongo-db-name"));
+			retMap.put("mysql-password", dbNode.getChildText("mongo-url"));
+			retMap.put("mongo-port", dbNode.getChildText("mongo-port"));
+			retMap.put("mongo-db-name", dbNode.getChildText("mongo-db-name"));
 		} catch (JDOMException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
