@@ -21,10 +21,9 @@ public class MongoDBConnectionMaker {
 		Map<String, String> confMap = DBConfiguration.getDBConfMap();
 		LOGGER.info("DB Connection Info: {}", confMap);
 		try {
-			mongoClient = new MongoClient(confMap.get("mongo-url"),
-					Integer.parseInt(confMap.get("mongo-port")));
+			mongoClient = new MongoClient("localhost", 27017);
 
-			mongoDB = mongoClient.getDB(confMap.get("mongo-db-name"));
+			mongoDB = mongoClient.getDB("CSN");
 		} catch (UnknownHostException e) {
 			LogPrinter.printErrorLog(LOGGER, e.getClass().toString(),
 					e.getMessage());
