@@ -13,7 +13,7 @@ public class JDBCConnectionMaker implements ConnectionMaker {
 		Class.forName("com.mysql.jdbc.Driver");
 
 		Map<String, String> confMap = DBConfiguration.getDBConfMap();
-
+		LOGGER.info("DB Connection Info: {}", confMap);
 		return DriverManager.getConnection(confMap.get("mysql-url"),
 				confMap.get("mysql-user"), confMap.get("mysql-password"));
 	}
