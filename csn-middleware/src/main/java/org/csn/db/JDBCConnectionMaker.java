@@ -6,6 +6,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Map;
 
+import org.csn.util.LogPrinter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class JDBCConnectionMaker implements ConnectionMaker {
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(JDBCConnectionMaker.class.getClass());
