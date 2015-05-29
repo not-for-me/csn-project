@@ -20,8 +20,8 @@ public class JDBCConnectionMaker implements ConnectionMaker {
 
 		Map<String, String> confMap = DBConfiguration.getDBConfMap();
 		LOGGER.info("DB Connection Info: {}", confMap);
-		return DriverManager.getConnection(confMap.get("mysql-url"),
-				confMap.get("mysql-user"), confMap.get("mysql-password"));
+		return DriverManager.getConnection("jdbc:mysql://localhost:3306/csn",
+				"root", "1234");
 	}
 
 }
