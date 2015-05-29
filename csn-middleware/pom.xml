@@ -5,7 +5,7 @@
 
 	<groupId>org.csn</groupId>
 	<artifactId>csn-middleware</artifactId>
-	<version>0.9.3</version>
+	<version>0.9.4</version>
 	<dependencies>
 		<dependency>
 			<groupId>mysql</groupId>
