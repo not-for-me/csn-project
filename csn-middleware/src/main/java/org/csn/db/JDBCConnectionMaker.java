@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.Map;
 
 public class JDBCConnectionMaker implements ConnectionMaker {
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(JDBCConnectionMaker.class.getClass());
 
 	public Connection makeConnection() throws ClassNotFoundException,
 			SQLException, IOException {
