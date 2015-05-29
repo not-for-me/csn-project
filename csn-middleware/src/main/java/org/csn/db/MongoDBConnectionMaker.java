@@ -19,7 +19,7 @@ public class MongoDBConnectionMaker {
 
 	public MongoDBConnectionMaker() {
 		Map<String, String> confMap = DBConfiguration.getDBConfMap();
-
+		LOGGER.info("DB Connection Info: {}", confMap);
 		try {
 			mongoClient = new MongoClient(confMap.get("mongo-url"),
 					Integer.parseInt(confMap.get("mongo-port")));
