@@ -34,7 +34,7 @@
 		<dependency>
 			<groupId>org.csn</groupId>
 			<artifactId>csn-middleware</artifactId>
-			<version>0.9.3</version>
+			<version>0.9.4</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
